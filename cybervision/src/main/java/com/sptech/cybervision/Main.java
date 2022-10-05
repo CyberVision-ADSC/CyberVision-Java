@@ -1,7 +1,10 @@
 package com.sptech.cybervision;
 
+import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.sistema.Sistema;
 import com.sptech.cybervision.config.Conexao;
 import com.sptech.cybervision.controller.GeracaoController;
+import oshi.hardware.CentralProcessor;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license

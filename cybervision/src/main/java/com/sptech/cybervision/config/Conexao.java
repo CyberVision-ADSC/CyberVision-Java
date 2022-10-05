@@ -16,13 +16,13 @@ public class Conexao {
 
     private static final String SERVER_NAME = "localhost";    //caminho do servidor do BD
 
-    private static final String MY_DATABASE = "pokemon";
+    private static final String MY_DATABASE = "cybervision";
 
     private static final String URL = "jdbc:mysql://" + SERVER_NAME + "/" + MY_DATABASE;
 
     private static final String USERNAME = "root"; //nome de um usuário de seu BD
 
-    private static final String PASSWORD = "Cpf52355271860";
+    private static final String PASSWORD = "Bruno@2004";
     
     public static Connection getConnection() {
         Connection connection = null;
