@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
  * @author leona
  */
 public class TelaLogin extends javax.swing.JFrame {
+     Usuario usuario = new Usuario();
+     Conexao conexao = new Conexao();
 
     /**
      * Creates new form NewJFrame
@@ -89,14 +91,12 @@ public class TelaLogin extends javax.swing.JFrame {
 
     private void botaoLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoLoginActionPerformed
         // TODO add your handling code here:
-        Usuario usuario = new Usuario();
-        Conexao conexao = new Conexao();
+       
         String emailDigitado = inputEmail.getText();
         String senhaDigitada = new String(inputSenha.getPassword());
        
         conexao.recuperar(emailDigitado, senhaDigitada);
-        
-        
+     
         
     }//GEN-LAST:event_botaoLoginActionPerformed
 

@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class Conexao {
 
     private JdbcTemplate jdbcTemplate;
+    private Boolean isLogado;
 
     public Conexao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -41,18 +42,15 @@ public class Conexao {
     }
 
     public void recuperar(String emailDigitado, String senhaDigitada) {
-        TelaLogin telalogin = new TelaLogin();
+       
         try {
             Map<String, Object> registro = jdbcTemplate.queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
-            System.out.println("LOGOU COM SUCESSO");
-           
-            
-        
-           
-            
+            System.out.println("LOGADO");
+            System.out.println(registro);
+      
         } catch (EmptyResultDataAccessException e) {
             System.out.println("NÃO LOGOU");
-
+           
            
         }
        
