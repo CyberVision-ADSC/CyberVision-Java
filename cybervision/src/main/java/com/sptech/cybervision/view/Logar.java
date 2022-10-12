@@ -77,8 +77,11 @@ public class Logar extends javax.swing.JFrame {
             }
         });
 
+        btn_entrar.setBackground(new java.awt.Color(113, 151, 249));
         btn_entrar.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
+        btn_entrar.setForeground(new java.awt.Color(255, 255, 255));
         btn_entrar.setText("Entrar");
+        btn_entrar.setBorderPainted(false);
         btn_entrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_entrarActionPerformed(evt);
@@ -131,7 +134,7 @@ public class Logar extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(txt_senha, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(43, 43, 43)
-                        .addComponent(btn_entrar))
+                        .addComponent(btn_entrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel2)
                     .addComponent(lbl_background))
                 .addContainerGap())
