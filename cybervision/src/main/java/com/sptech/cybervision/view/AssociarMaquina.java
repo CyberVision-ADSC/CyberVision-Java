@@ -50,8 +50,11 @@ public class AssociarMaquina extends javax.swing.JFrame {
         lbl_codigo.setForeground(new java.awt.Color(34, 35, 89));
         lbl_codigo.setText("Digite o código que está sendo exibido na web");
 
+        btn_associar.setBackground(new java.awt.Color(113, 151, 249));
         btn_associar.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
+        btn_associar.setForeground(new java.awt.Color(255, 255, 255));
         btn_associar.setText("Associar");
+        btn_associar.setBorderPainted(false);
         btn_associar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_associarActionPerformed(evt);

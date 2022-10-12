@@ -53,8 +53,11 @@ public class AlunoLogado extends javax.swing.JFrame {
         lbl_frase2.setForeground(new java.awt.Color(34, 35, 89));
         lbl_frase2.setText("proporcionar uma melhor experiência ");
 
+        btn_ajuda.setBackground(new java.awt.Color(113, 151, 249));
         btn_ajuda.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
+        btn_ajuda.setForeground(new java.awt.Color(255, 255, 255));
         btn_ajuda.setText("Precisa de ajuda?");
+        btn_ajuda.setBorderPainted(false);
         btn_ajuda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_ajudaActionPerformed(evt);
@@ -112,7 +115,7 @@ public class AlunoLogado extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 597, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 597, Short.MAX_VALUE)
         );
 
         pack();
