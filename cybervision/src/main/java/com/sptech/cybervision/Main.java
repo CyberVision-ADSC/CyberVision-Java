@@ -1,7 +1,14 @@
 package com.sptech.cybervision;
 
 import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.discos.Disco;
+import com.github.britooo.looca.api.group.discos.DiscosGroup;
+import com.github.britooo.looca.api.group.processos.Processo;
+import com.github.britooo.looca.api.group.processos.ProcessosGroup;
+import com.github.britooo.looca.api.group.servicos.Servico;
+import com.github.britooo.looca.api.group.servicos.ServicosGroup;
 import com.github.britooo.looca.api.group.sistema.Sistema;
+import java.util.List;
 import oshi.hardware.CentralProcessor;
 
 /*
@@ -15,20 +22,31 @@ import oshi.hardware.CentralProcessor;
 public class Main {
 
     public static void main(String[] args) {
-        
-        
+
         Looca looca = new Looca();
         Sistema sistema = looca.getSistema();
-        
-        sistema.getPermissao();
-        sistema.getFabricante();
-        sistema.getArquitetura();
-        sistema.getInicializado();
-        sistema.getSistemaOperacional();
-        sistema.getTempoDeAtividade();
 
-        System.out.println(sistema);
-        
+        System.out.println(looca.getSistema());
+        System.out.println(looca.getMemoria());
+        System.out.println(looca.getProcessador());
+
+        DiscosGroup grupoDeDiscos = looca.getGrupoDeDiscos();
+
+        List<Disco> discos = grupoDeDiscos.getDiscos();
+
+        for (Disco disco : discos) {
+            System.out.println(disco);
+        }
+
+        ProcessosGroup grupoDeProcessos = looca.getGrupoDeProcessos();
+
+        List<Processo> processos = grupoDeProcessos.getProcessos();
+
+        for (Processo processo : processos) {
+            System.out.println(processo);
+        }
+
        
+
     }
 }
