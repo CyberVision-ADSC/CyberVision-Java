@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.sptech.cybervision;
+package com.sptech.cybervision.view;
 
 /**
  *
@@ -57,6 +57,7 @@ public class AlunoLogado extends javax.swing.JFrame {
         btn_ajuda.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
         btn_ajuda.setForeground(new java.awt.Color(255, 255, 255));
         btn_ajuda.setText("Precisa de ajuda?");
+        btn_ajuda.setBorder(null);
         btn_ajuda.setBorderPainted(false);
         btn_ajuda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

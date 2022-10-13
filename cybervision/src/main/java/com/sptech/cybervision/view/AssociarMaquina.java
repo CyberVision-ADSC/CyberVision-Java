@@ -54,6 +54,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
         btn_associar.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
         btn_associar.setForeground(new java.awt.Color(255, 255, 255));
         btn_associar.setText("Associar");
+        btn_associar.setBorder(null);
         btn_associar.setBorderPainted(false);
         btn_associar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

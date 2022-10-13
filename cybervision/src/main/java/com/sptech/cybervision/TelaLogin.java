@@ -5,15 +5,19 @@
 package com.sptech.cybervision;
 
 import com.sptech.cybervision.view.AssociarMaquina;
+import java.util.Map;
 import javax.swing.JOptionPane;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
  * @author leona
  */
 public class TelaLogin extends javax.swing.JFrame {
-     Usuario usuario = new Usuario();
-     Conexao conexao = new Conexao();
+
+    Usuario usuario = new Usuario();
+    Conexao conexao = new Conexao();
+    TelaTeste teste = new TelaTeste();
 
     /**
      * Creates new form NewJFrame
@@ -91,13 +95,25 @@ public class TelaLogin extends javax.swing.JFrame {
 
     private void botaoLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoLoginActionPerformed
         // TODO add your handling code here:
-       
+
         String emailDigitado = inputEmail.getText();
         String senhaDigitada = new String(inputSenha.getPassword());
-       
-        conexao.recuperar(emailDigitado, senhaDigitada);
-     
-        
+
+        try {
+            Map<String, Object> registro = conexao.jdbcTemplate.queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
+            System.out.println("LOGADO");
+            System.out.println(registro);
+
+            this.dispose();
+            teste.setVisible(true);
+
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println("NÃO LOGOU");
+            JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
+
+        }
+
+
     }//GEN-LAST:event_botaoLoginActionPerformed
 
     /**

@@ -88,6 +88,7 @@ public class Chamado extends javax.swing.JFrame {
         btn_enviar.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
         btn_enviar.setForeground(new java.awt.Color(255, 255, 255));
         btn_enviar.setText("Enviar");
+        btn_enviar.setBorder(null);
         btn_enviar.setBorderPainted(false);
         btn_enviar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

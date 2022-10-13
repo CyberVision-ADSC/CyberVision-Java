@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class Conexao {
 
-    private JdbcTemplate jdbcTemplate;
+    JdbcTemplate jdbcTemplate;
     private Boolean isLogado;
 
     public Conexao(JdbcTemplate jdbcTemplate) {

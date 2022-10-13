@@ -81,6 +81,7 @@ public class Logar extends javax.swing.JFrame {
         btn_entrar.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
         btn_entrar.setForeground(new java.awt.Color(255, 255, 255));
         btn_entrar.setText("Entrar");
+        btn_entrar.setBorder(null);
         btn_entrar.setBorderPainted(false);
         btn_entrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
