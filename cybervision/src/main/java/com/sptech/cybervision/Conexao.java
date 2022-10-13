@@ -41,19 +41,5 @@ public class Conexao {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void recuperar(String emailDigitado, String senhaDigitada) {
-       
-        try {
-            Map<String, Object> registro = jdbcTemplate.queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
-            System.out.println("LOGADO");
-            System.out.println(registro);
-      
-        } catch (EmptyResultDataAccessException e) {
-            System.out.println("NÃO LOGOU");
-           
-           
-        }
-       
-    }
 
 }
