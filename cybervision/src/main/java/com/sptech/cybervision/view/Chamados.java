@@ -40,6 +40,7 @@ public class Chamados extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(799, 600));
 
         img_background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/Background.png"))); // NOI18N
@@ -52,7 +53,6 @@ public class Chamados extends javax.swing.JFrame {
         lbl_ra.setForeground(new java.awt.Color(34, 35, 89));
         lbl_ra.setText("RA do aluno: ");
 
-        txt_ra.setBackground(new java.awt.Color(254, 254, 254));
         txt_ra.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
         txt_ra.setCaretColor(new java.awt.Color(254, 254, 254));
         txt_ra.addActionListener(new java.awt.event.ActionListener() {

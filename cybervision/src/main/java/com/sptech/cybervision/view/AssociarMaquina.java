@@ -36,6 +36,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(799, 600));
 
         img_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cybervision.png"))); // NOI18N
@@ -50,7 +51,6 @@ public class AssociarMaquina extends javax.swing.JFrame {
         lbl_digite.setForeground(new java.awt.Color(34, 35, 89));
         lbl_digite.setText("Digite o código que está sendo exibido na web");
 
-        txt_codigo.setBackground(new java.awt.Color(254, 254, 254));
         txt_codigo.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
         txt_codigo.setCaretColor(new java.awt.Color(254, 254, 254));
         txt_codigo.addActionListener(new java.awt.event.ActionListener() {

@@ -46,6 +46,7 @@ public class Login extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(799, 600));
 
         img_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cybervision.png"))); // NOI18N
@@ -60,7 +61,6 @@ public class Login extends javax.swing.JFrame {
         lbl_email.setForeground(new java.awt.Color(34, 35, 89));
         lbl_email.setText("Email:");
 
-        txt_email1.setBackground(new java.awt.Color(254, 254, 254));
         txt_email1.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
         txt_email1.setCaretColor(new java.awt.Color(254, 254, 254));
         txt_email1.addActionListener(new java.awt.event.ActionListener() {

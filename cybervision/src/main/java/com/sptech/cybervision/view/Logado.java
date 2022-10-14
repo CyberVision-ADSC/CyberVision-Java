@@ -36,6 +36,7 @@ public class Logado extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(799, 600));
 
         img_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cybervision.png"))); // NOI18N
@@ -50,9 +51,9 @@ public class Logado extends javax.swing.JFrame {
         lbl_frase1.setForeground(new java.awt.Color(34, 35, 89));
         lbl_frase1.setText("Estamos trabalhando para te");
 
-        btn_ajuda.setBackground(new java.awt.Color(255, 255, 255));
+        btn_ajuda.setBackground(new java.awt.Color(113, 151, 249));
         btn_ajuda.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
-        btn_ajuda.setForeground(new java.awt.Color(113, 151, 249));
+        btn_ajuda.setForeground(new java.awt.Color(255, 255, 255));
         btn_ajuda.setText("Precisa de ajuda?");
         btn_ajuda.setBorder(null);
         btn_ajuda.setBorderPainted(false);
