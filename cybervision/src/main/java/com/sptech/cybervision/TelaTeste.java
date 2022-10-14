@@ -4,11 +4,15 @@
  */
 package com.sptech.cybervision;
 
+import com.github.britooo.looca.api.core.Looca;
+
 /**
  *
  * @author leona
  */
 public class TelaTeste extends javax.swing.JFrame {
+    Looca looca = new Looca();
+    Conexao conexao = new Conexao();
 
     /**
      * Creates new form TelaTeste
@@ -36,6 +40,11 @@ public class TelaTeste extends javax.swing.JFrame {
         jLabel1.setText("ADICIONE SUA MÁQUINA");
 
         btn_associar.setText("Associar");
+        btn_associar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_associarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -69,6 +78,26 @@ public class TelaTeste extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_associarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_associarActionPerformed
+        // TODO add your handling code here:
+        String hostName = inputHostName.getText();
+        String nomeProcessador = looca.getProcessador().getNome();
+        Integer arquitetura = looca.getSistema().getArquitetura();
+        String fabricante = looca.getSistema().getFabricante();
+        Long memoriaRam = looca.getMemoria().getTotal();
+        Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal();
+        String sistemaOperacional = looca.getSistema().getSistemaOperacional();
+        
+        
+        
+        
+        conexao.jdbcTemplate.update
+        ("INSERT INTO computador VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                null, hostName, nomeProcessador, arquitetura, fabricante, 
+                memoriaRam, tamanhoDisco, sistemaOperacional, true, true, true, true, true, 1);
+        
+    }//GEN-LAST:event_btn_associarActionPerformed
 
     /**
      * @param args the command line arguments

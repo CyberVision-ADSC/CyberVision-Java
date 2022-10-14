@@ -25,28 +25,36 @@ public class Main {
 
         Looca looca = new Looca();
         Sistema sistema = looca.getSistema();
-
-        System.out.println(looca.getSistema());
-        System.out.println(looca.getMemoria());
-        System.out.println(looca.getProcessador());
-
-        DiscosGroup grupoDeDiscos = looca.getGrupoDeDiscos();
-
-        List<Disco> discos = grupoDeDiscos.getDiscos();
-
-        for (Disco disco : discos) {
-            System.out.println(disco);
-        }
-
-        ProcessosGroup grupoDeProcessos = looca.getGrupoDeProcessos();
-
-        List<Processo> processos = grupoDeProcessos.getProcessos();
-
-        for (Processo processo : processos) {
-            System.out.println(processo);
-        }
-
        
+
+     
+       
+        System.out.println(looca.getProcessador().getNome());
+        System.out.println(looca.getSistema().getArquitetura());
+        System.out.println(looca.getSistema().getFabricante());
+        System.out.println(looca.getMemoria().getTotal());
+        System.out.println(looca.getGrupoDeDiscos().getTamanhoTotal());
+        System.out.println(looca.getSistema().getSistemaOperacional());
+        
+        
+
+//        DiscosGroup grupoDeDiscos = looca.getGrupoDeDiscos();
+//
+//        List<Disco> discos = grupoDeDiscos.getDiscos();
+//
+//        for (Disco disco : discos) {
+//            System.out.println(disco);
+//        }
+//
+//        ProcessosGroup grupoDeProcessos = looca.getGrupoDeProcessos();
+//
+//        List<Processo> processos = grupoDeProcessos.getProcessos();
+//
+//        for (Processo processo : processos) {
+//            System.out.println(processo);
+//        }
+//
+//       
 
     }
 }
