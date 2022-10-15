@@ -29,6 +29,8 @@ public class Main {
         Looca looca = new Looca();
         Sistema sistema = looca.getSistema();
         
+        
+        
        
 //
 //        System.out.println(looca.getGrupoDeProcessos().getTotalProcessos());
@@ -50,12 +52,12 @@ public class Main {
 //         
 //         }
 //         System.out.println(totalVolume);
-//         
-         Long totalVolumeDisponivel = Long.MAX_VALUE - Long.MAX_VALUE;         
-         for(Volume volume : looca.getGrupoDeDiscos().getVolumes()){
-             System.out.println(volume.getDisponivel());
-        
-        }
+////         
+//         Long totalVolumeDisponivel = Long.MAX_VALUE - Long.MAX_VALUE;         
+//         for(Volume volume : looca.getGrupoDeDiscos().getVolumes()){
+//             System.out.println(volume.getDisponivel());
+//        
+//        }
        
 //         
 //         Long totalDiscoUsado = totalVolume - totalVolumeDisponivel;
@@ -66,10 +68,10 @@ public class Main {
 //            System.out.println(processo.getUsoCpu());
 //        }
 
-            for(Processo processo : looca.getGrupoDeProcessos().getProcessos()){
-               
-                
-            }
+//            for(Processo processo : looca.getGrupoDeProcessos().getProcessos()){
+//               
+//                
+//            }
 
 
 
