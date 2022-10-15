@@ -50,7 +50,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="txt_codigo" max="32767" attributes="0"/>
+                              <Component id="inputHostName" max="32767" attributes="0"/>
                               <Component id="lbl_digite" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
@@ -87,7 +87,7 @@
                   <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                   <Component id="lbl_digite" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="txt_codigo" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="inputHostName" min="-2" pref="37" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
                   <Component id="btn_associar" min="-2" pref="40" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
@@ -133,7 +133,7 @@
             <Property name="text" type="java.lang.String" value="Digite o c&#xf3;digo que est&#xe1; sendo exibido na web"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txt_codigo">
+        <Component class="javax.swing.JTextField" name="inputHostName">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="fe" green="fe" red="fe" type="rgb"/>
@@ -146,7 +146,7 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txt_codigoActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="inputHostNameActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_associar">

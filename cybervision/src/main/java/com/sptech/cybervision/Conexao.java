@@ -6,7 +6,6 @@ package com.sptech.cybervision;
 
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.sistema.Sistema;
-import com.sptech.cybervision.view.AssociarMaquina;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -20,7 +19,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class Conexao {
 
     JdbcTemplate jdbcTemplate;
-    private Boolean isLogado;
 
     public Conexao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

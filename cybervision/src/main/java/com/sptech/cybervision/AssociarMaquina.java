@@ -2,7 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.sptech.cybervision.view;
+package com.sptech.cybervision;
+
+import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.discos.Volume;
+import com.github.britooo.looca.api.group.processos.Processo;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.swing.JOptionPane;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -10,11 +22,16 @@ package com.sptech.cybervision.view;
  */
 public class AssociarMaquina extends javax.swing.JFrame {
 
+    Looca looca = new Looca();
+    Conexao conexao = new Conexao();
+    Logado logado = new Logado();
+
     /**
      * Creates new form Logado
      */
     public AssociarMaquina() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -31,7 +48,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
         img_background = new javax.swing.JLabel();
         lbl_associe = new javax.swing.JLabel();
         lbl_digite = new javax.swing.JLabel();
-        txt_codigo = new javax.swing.JTextField();
+        inputHostName = new javax.swing.JTextField();
         btn_associar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -50,12 +67,12 @@ public class AssociarMaquina extends javax.swing.JFrame {
         lbl_digite.setForeground(new java.awt.Color(34, 35, 89));
         lbl_digite.setText("Digite o código que está sendo exibido na web");
 
-        txt_codigo.setBackground(new java.awt.Color(254, 254, 254));
-        txt_codigo.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
-        txt_codigo.setCaretColor(new java.awt.Color(254, 254, 254));
-        txt_codigo.addActionListener(new java.awt.event.ActionListener() {
+        inputHostName.setBackground(new java.awt.Color(254, 254, 254));
+        inputHostName.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
+        inputHostName.setCaretColor(new java.awt.Color(254, 254, 254));
+        inputHostName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_codigoActionPerformed(evt);
+                inputHostNameActionPerformed(evt);
             }
         });
 
@@ -79,7 +96,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txt_codigo)
+                            .addComponent(inputHostName)
                             .addComponent(lbl_digite, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(46, 46, 46))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -106,7 +123,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
                 .addGap(40, 40, 40)
                 .addComponent(lbl_digite)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txt_codigo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(inputHostName, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(46, 46, 46)
                 .addComponent(btn_associar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -129,12 +146,80 @@ public class AssociarMaquina extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txt_codigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_codigoActionPerformed
+    private void inputHostNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputHostNameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_codigoActionPerformed
+    }//GEN-LAST:event_inputHostNameActionPerformed
 
     private void btn_associarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_associarActionPerformed
         // TODO add your handling code here:
+
+        String hostName = inputHostName.getText();
+        String nomeProcessador = looca.getProcessador().getNome();
+        Integer arquitetura = looca.getSistema().getArquitetura();
+        String fabricante = looca.getSistema().getFabricante();
+        Long memoriaRam = looca.getMemoria().getTotal() / 1000000;
+        Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / 1000000;
+        String sistemaOperacional = looca.getSistema().getSistemaOperacional();
+
+        try {
+            Map<String, Object> registroHost = conexao.jdbcTemplate.queryForMap(
+                    "select * from computador WHERE hostname = ?", hostName);
+
+            conexao.jdbcTemplate.update(
+                    "UPDATE computador SET processador = ?, arquitetura = ?, "
+                    + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
+                    + "ativo = ? WHERE hostname = ?",
+                    nomeProcessador, arquitetura, fabricante, memoriaRam,
+                    tamanhoDisco, sistemaOperacional, true, hostName);
+
+            new Timer().scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+
+                    Long totalDisco = Long.MAX_VALUE - Long.MAX_VALUE;
+                    Long totalDiscoDisponivel = Long.MAX_VALUE - Long.MAX_VALUE;
+
+                    for (Volume volume : looca.getGrupoDeDiscos().getVolumes()) {
+                        totalDisco += volume.getTotal();
+                    }
+
+                    for (Volume volume : looca.getGrupoDeDiscos().getVolumes()) {
+                        totalDiscoDisponivel += volume.getDisponivel();
+                    }
+
+                    Double usoCpu = looca.getProcessador().getUso();
+                    Long usoDisco = (totalDisco - totalDiscoDisponivel) / 1000000;
+                    Long usoRam = looca.getMemoria().getEmUso() / 1000000;
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                    String dataHora = dtf.format(LocalDateTime.now());
+
+                    conexao.jdbcTemplate.update(
+                            "INSERT INTO relatorio VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            null, usoCpu, usoDisco, usoRam, false, false, false, false,
+                            dataHora, null, null);
+
+                    for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
+                        Integer pidProcesso = processo.getPid();
+                        String nomeProcesso = processo.getNome();
+                        Double usoCpuProcesso = processo.getUsoCpu();
+                        Double usoMemoriaProcesso = processo.getUsoMemoria();
+
+                        conexao.jdbcTemplate.update(
+                                "INSERT INTO processo VALUES (?, ?, ?, ?, ?, ?)",
+                                null, pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);
+                    }
+                }
+            }, 0, 5000);
+
+            this.dispose();
+            logado.setVisible(true);
+
+        } catch (EmptyResultDataAccessException e) {
+            JOptionPane.showMessageDialog(this, "HostName não encontrado!");
+
+        }
+
+
     }//GEN-LAST:event_btn_associarActionPerformed
 
     /**
@@ -177,9 +262,9 @@ public class AssociarMaquina extends javax.swing.JFrame {
     private javax.swing.JButton btn_associar;
     private javax.swing.JLabel img_background;
     private javax.swing.JLabel img_logo;
+    private javax.swing.JTextField inputHostName;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lbl_associe;
     private javax.swing.JLabel lbl_digite;
-    private javax.swing.JTextField txt_codigo;
     // End of variables declaration//GEN-END:variables
 }

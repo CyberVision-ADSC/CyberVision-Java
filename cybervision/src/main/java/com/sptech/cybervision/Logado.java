@@ -2,19 +2,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.sptech.cybervision.view;
+package com.sptech.cybervision;
 
 /**
  *
  * @author bruno
  */
 public class Logado extends javax.swing.JFrame {
+    Chamados chamados = new Chamados();
 
     /**
      * Creates new form Logado
      */
     public Logado() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -50,9 +52,9 @@ public class Logado extends javax.swing.JFrame {
         lbl_frase1.setForeground(new java.awt.Color(34, 35, 89));
         lbl_frase1.setText("Estamos trabalhando para te");
 
-        btn_ajuda.setBackground(new java.awt.Color(255, 255, 255));
+        btn_ajuda.setBackground(new java.awt.Color(113, 151, 249));
         btn_ajuda.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
-        btn_ajuda.setForeground(new java.awt.Color(113, 151, 249));
+        btn_ajuda.setForeground(new java.awt.Color(255, 255, 255));
         btn_ajuda.setText("Precisa de ajuda?");
         btn_ajuda.setBorder(null);
         btn_ajuda.setBorderPainted(false);
@@ -124,6 +126,8 @@ public class Logado extends javax.swing.JFrame {
 
     private void btn_ajudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_ajudaActionPerformed
         // TODO add your handling code here:
+            this.dispose();
+            chamados.setVisible(true);
     }//GEN-LAST:event_btn_ajudaActionPerformed
 
     /**

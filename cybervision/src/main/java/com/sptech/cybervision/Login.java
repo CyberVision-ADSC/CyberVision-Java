@@ -2,19 +2,29 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.sptech.cybervision.view;
+package com.sptech.cybervision;
+
+import com.sptech.cybervision.Conexao;
+import com.sptech.cybervision.Usuario;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
  * @author bruno
  */
 public class Login extends javax.swing.JFrame {
+    Usuario usuario = new Usuario();
+    Conexao conexao = new Conexao();
+    AssociarMaquina associar = new AssociarMaquina();
 
     /**
      * Creates new form Login
      */
     public Login() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -33,10 +43,10 @@ public class Login extends javax.swing.JFrame {
         img_background = new javax.swing.JLabel();
         lbl_login1 = new javax.swing.JLabel();
         lbl_email = new javax.swing.JLabel();
-        txt_email1 = new javax.swing.JTextField();
+        inputEmail = new javax.swing.JTextField();
         lbl_senha = new javax.swing.JLabel();
-        txt_senha = new javax.swing.JTextField();
         btn_entrar = new javax.swing.JButton();
+        inputSenha = new javax.swing.JPasswordField();
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cybervision.png"))); // NOI18N
 
@@ -60,25 +70,18 @@ public class Login extends javax.swing.JFrame {
         lbl_email.setForeground(new java.awt.Color(34, 35, 89));
         lbl_email.setText("Email:");
 
-        txt_email1.setBackground(new java.awt.Color(254, 254, 254));
-        txt_email1.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
-        txt_email1.setCaretColor(new java.awt.Color(254, 254, 254));
-        txt_email1.addActionListener(new java.awt.event.ActionListener() {
+        inputEmail.setBackground(new java.awt.Color(254, 254, 254));
+        inputEmail.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
+        inputEmail.setCaretColor(new java.awt.Color(254, 254, 254));
+        inputEmail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_email1ActionPerformed(evt);
+                inputEmailActionPerformed(evt);
             }
         });
 
         lbl_senha.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
         lbl_senha.setForeground(new java.awt.Color(34, 35, 89));
         lbl_senha.setText("Senha:");
-
-        txt_senha.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
-        txt_senha.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txt_senhaActionPerformed(evt);
-            }
-        });
 
         btn_entrar.setBackground(new java.awt.Color(113, 151, 249));
         btn_entrar.setFont(new java.awt.Font("Montserrat SemiBold", 0, 15)); // NOI18N
@@ -106,11 +109,11 @@ public class Login extends javax.swing.JFrame {
                         .addComponent(lbl_login1))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(73, 73, 73)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txt_email1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(inputEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
                             .addComponent(lbl_email)
                             .addComponent(lbl_senha)
-                            .addComponent(txt_senha, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(inputSenha)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(97, 97, 97)
                         .addComponent(btn_entrar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -127,12 +130,12 @@ public class Login extends javax.swing.JFrame {
                 .addGap(34, 34, 34)
                 .addComponent(lbl_email)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_email1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(inputEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42)
                 .addComponent(lbl_senha)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_senha, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
+                .addComponent(inputSenha, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(54, 54, 54)
                 .addComponent(btn_entrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(img_background, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -154,16 +157,24 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txt_email1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_email1ActionPerformed
+    private void inputEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputEmailActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_email1ActionPerformed
-
-    private void txt_senhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_senhaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_senhaActionPerformed
+    }//GEN-LAST:event_inputEmailActionPerformed
 
     private void btn_entrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_entrarActionPerformed
         // TODO add your handling code here:
+        String emailDigitado = inputEmail.getText();
+        String senhaDigitada = new String(inputSenha.getPassword());
+
+        try {
+            Map<String, Object> registro = conexao.jdbcTemplate.queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
+            this.dispose();
+            associar.setVisible(true);
+
+        } catch (EmptyResultDataAccessException e) {
+            JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
+
+        }
     }//GEN-LAST:event_btn_entrarActionPerformed
 
     /**
@@ -205,13 +216,13 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JButton btn_entrar;
     private javax.swing.JLabel img_background;
     private javax.swing.JLabel img_logo;
+    private javax.swing.JTextField inputEmail;
+    private javax.swing.JPasswordField inputSenha;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lbl_email;
     private javax.swing.JLabel lbl_login;
     private javax.swing.JLabel lbl_login1;
     private javax.swing.JLabel lbl_senha;
-    private javax.swing.JTextField txt_email1;
-    private javax.swing.JTextField txt_senha;
     // End of variables declaration//GEN-END:variables
 }
