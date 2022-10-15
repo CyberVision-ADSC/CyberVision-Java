@@ -53,6 +53,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(799, 600));
 
         img_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icon_cybervision.png"))); // NOI18N
@@ -67,10 +68,16 @@ public class AssociarMaquina extends javax.swing.JFrame {
         lbl_digite.setForeground(new java.awt.Color(34, 35, 89));
         lbl_digite.setText("Digite o código que está sendo exibido na web");
 
+<<<<<<< HEAD:cybervision/src/main/java/com/sptech/cybervision/AssociarMaquina.java
         inputHostName.setBackground(new java.awt.Color(254, 254, 254));
         inputHostName.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
         inputHostName.setCaretColor(new java.awt.Color(254, 254, 254));
         inputHostName.addActionListener(new java.awt.event.ActionListener() {
+=======
+        txt_codigo.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
+        txt_codigo.setCaretColor(new java.awt.Color(254, 254, 254));
+        txt_codigo.addActionListener(new java.awt.event.ActionListener() {
+>>>>>>> a5b2f6b4bdf15461a48647af75a49027374ce566:cybervision/src/main/java/com/sptech/cybervision/view/AssociarMaquina.java
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inputHostNameActionPerformed(evt);
             }
