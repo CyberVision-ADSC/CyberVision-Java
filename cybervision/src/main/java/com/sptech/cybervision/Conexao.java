@@ -28,17 +28,17 @@ public class Conexao {
 
         BasicDataSource dataSource = new BasicDataSource();
 
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
-        dataSource.setUrl("jdbc:mysql://localhost:3306/cybervision");
+//        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//
+//        dataSource.setUrl("jdbc:mysql://localhost:3306/cybervision");
         
-//        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); 
-//        
-//        dataSource.setUrl("jdbc:sqlserver://meubanco.database.windows.net/cybervision-bd");
+        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); 
+        
+        dataSource.setUrl("jdbc:sqlserver://cybervision-server.database.windows.net/cybervision");
 
-        dataSource.setUsername("root");
+        dataSource.setUsername("admin-cybervision");
 
-        dataSource.setPassword("nacagawa1333");
+        dataSource.setPassword("#Gfgrupo4");
 
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
