@@ -31,6 +31,10 @@ public class Conexao {
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         dataSource.setUrl("jdbc:mysql://localhost:3306/cybervision");
+        
+//        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver"); 
+//        
+//        dataSource.setUrl("jdbc:sqlserver://meubanco.database.windows.net/cybervision-bd");
 
         dataSource.setUsername("root");
 
