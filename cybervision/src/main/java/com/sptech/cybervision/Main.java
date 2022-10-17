@@ -9,9 +9,11 @@ import com.github.britooo.looca.api.group.processos.ProcessosGroup;
 import com.github.britooo.looca.api.group.servicos.Servico;
 import com.github.britooo.looca.api.group.servicos.ServicosGroup;
 import com.github.britooo.looca.api.group.sistema.Sistema;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.sql.DataSource;
 import oshi.hardware.CentralProcessor;
 
 /*
@@ -24,12 +26,11 @@ import oshi.hardware.CentralProcessor;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         Looca looca = new Looca();
         Sistema sistema = looca.getSistema();
-        
-        
+ 
         
        
 //

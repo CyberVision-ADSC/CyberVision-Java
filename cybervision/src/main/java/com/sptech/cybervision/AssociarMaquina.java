@@ -195,10 +195,14 @@ public class AssociarMaquina extends javax.swing.JFrame {
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                     String dataHora = dtf.format(LocalDateTime.now());
 
-                    conexao.jdbcTemplate.update(
-                            "INSERT INTO relatorio VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            null, usoCpu, usoDisco, usoRam, false, false, false, false,
+                    int rowInsertedRelatorio = conexao.jdbcTemplate.update(
+                            "INSERT INTO relatorio VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            usoCpu, usoDisco, usoRam, false, false, false, false,
                             dataHora, null, null);
+                    
+                    if (rowInsertedRelatorio > 0) {
+                        System.out.println("relatorio inserido com sucesso");
+                    }
 
                     for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                         Integer pidProcesso = processo.getPid();
@@ -206,9 +210,14 @@ public class AssociarMaquina extends javax.swing.JFrame {
                         Double usoCpuProcesso = processo.getUsoCpu();
                         Double usoMemoriaProcesso = processo.getUsoMemoria();
 
-                        conexao.jdbcTemplate.update(
-                                "INSERT INTO processo VALUES (?, ?, ?, ?, ?, ?)",
-                                null, pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);
+                        int rowsInsertedProcess = conexao.jdbcTemplate.update(
+                                "INSERT INTO processo VALUES (?, ?, ?, ?, ?)",
+                                pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);
+                        
+                        if (rowsInsertedProcess > 0){
+                            System.out.println("processo inserido com sucesso");
+                        }
+                        
                     }
                 }
             }, 0, 5000);
@@ -259,6 +268,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
             }
         });
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_associar;
