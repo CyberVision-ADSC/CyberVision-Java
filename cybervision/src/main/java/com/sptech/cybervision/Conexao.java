@@ -35,14 +35,22 @@ public class Conexao {
 //        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 //
 //        dataSource.setUrl("jdbc:mysql://localhost:3306/cybervision");
+//        
+//        dataSource.setDriverClassName(DRIVER_AZURE); 
+//        
+//        dataSource.setUrl(URL_AZURE);
+//
+//        dataSource.setUsername("admin-cybervision");
+//
+//        dataSource.setPassword("#Gfgrupo4");
         
-        dataSource.setDriverClassName(DRIVER_AZURE); 
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver"); 
         
-        dataSource.setUrl(URL_AZURE);
+        dataSource.setUrl("jdbc:mysql://172.17.0.2:3306/cybervision");
 
-        dataSource.setUsername("admin-cybervision");
+        dataSource.setUsername("root");
 
-        dataSource.setPassword("#Gfgrupo4");
+        dataSource.setPassword("urubu100");
 
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
