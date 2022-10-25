@@ -19,10 +19,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class Conexao {
 
     JdbcTemplate jdbcTemplate;
-    private static final String DRIVER_AZURE = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private static final String URL_AZURE = "jdbc:sqlserver://cybervision-server.database.windows.net:1433;database=cybervision";
-    private static final String DRIVER_LOCAL = "com.mysql.cj.jdbc.Driver";
-    private static final String URL_LOCAL = "jdbc:mysql://localhost:3306/cybervision";
+//    private static final String DRIVER_AZURE = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+//    private static final String URL_AZURE = "jdbc:sqlserver://cybervision-server.database.windows.net:1433;database=cybervision";
+//    private static final String DRIVER_LOCAL = "com.mysql.cj.jdbc.Driver";
+//    private static final String URL_LOCAL = "jdbc:mysql://localhost:3306/cybervision";
 
     public Conexao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
