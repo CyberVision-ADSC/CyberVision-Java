@@ -1,20 +1,8 @@
 package com.sptech.cybervision;
 
 import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.discos.Disco;
-import com.github.britooo.looca.api.group.discos.DiscosGroup;
-import com.github.britooo.looca.api.group.discos.Volume;
-import com.github.britooo.looca.api.group.processos.Processo;
-import com.github.britooo.looca.api.group.processos.ProcessosGroup;
-import com.github.britooo.looca.api.group.servicos.Servico;
-import com.github.britooo.looca.api.group.servicos.ServicosGroup;
 import com.github.britooo.looca.api.group.sistema.Sistema;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import javax.sql.DataSource;
-import oshi.hardware.CentralProcessor;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license

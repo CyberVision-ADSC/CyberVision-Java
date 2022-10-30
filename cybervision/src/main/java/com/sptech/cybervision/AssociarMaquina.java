@@ -6,9 +6,7 @@ package com.sptech.cybervision;
 
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
-import com.github.britooo.looca.api.group.processos.Processo;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Timer;
@@ -68,11 +66,9 @@ public class AssociarMaquina extends javax.swing.JFrame {
         lbl_digite.setForeground(new java.awt.Color(34, 35, 89));
         lbl_digite.setText("Digite o código que está sendo exibido na web");
 
-        inputHostName.setBackground(new java.awt.Color(254, 254, 254));
         inputHostName.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
         inputHostName.setCaretColor(new java.awt.Color(254, 254, 254));
         inputHostName.addActionListener(new java.awt.event.ActionListener() {
-            
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inputHostNameActionPerformed(evt);
             }
@@ -166,6 +162,8 @@ public class AssociarMaquina extends javax.swing.JFrame {
         try {
             Map<String, Object> registroHost = conexao.jdbcTemplate.queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
+            
+            Computador computador = new Computador(hostName, nomeProcessador, arquitetura, fabricante, memoriaRam, tamanhoDisco, sistemaOperacional, true);
 
             conexao.jdbcTemplate.update(
                     "UPDATE computador SET processador = ?, arquitetura = ?, "
@@ -196,28 +194,31 @@ public class AssociarMaquina extends javax.swing.JFrame {
                     String dataHora = dtf.format(LocalDateTime.now());
 
                     int rowInsertedRelatorio = conexao.jdbcTemplate.update(
-                            "INSERT INTO relatorio VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, problema_cpu,"
+                            + " problema_disco, problema_memoria, problema_fisico, data_hora, fk_computador,"
+                            + " fk_sala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                             usoCpu, usoDisco, usoRam, false, false, false, false,
                             dataHora, null, null);
-                    
+
                     if (rowInsertedRelatorio > 0) {
                         System.out.println("relatorio inserido com sucesso");
                     }
 
-                    for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
+                    for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                         Integer pidProcesso = processo.getPid();
                         String nomeProcesso = processo.getNome();
                         Double usoCpuProcesso = processo.getUsoCpu();
                         Double usoMemoriaProcesso = processo.getUsoMemoria();
 
                         int rowsInsertedProcess = conexao.jdbcTemplate.update(
-                                "INSERT INTO processo VALUES (?, ?, ?, ?, ?)",
+                                "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
+                                + " VALUES (?, ?, ?, ?, ?)",
                                 pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);
-                        
-                        if (rowsInsertedProcess > 0){
+
+                        if (rowsInsertedProcess > 0) {
                             System.out.println("processo inserido com sucesso");
                         }
-                        
+
                     }
                 }
             }, 0, 5000);
@@ -226,7 +227,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
             logado.setVisible(true);
 
         } catch (EmptyResultDataAccessException e) {
-            JOptionPane.showMessageDialog(this, "HostName não encontrado!");
+            JOptionPane.showMessageDialog(this, "Hostname não encontrado!");
 
         }
 

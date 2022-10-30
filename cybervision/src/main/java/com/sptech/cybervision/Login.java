@@ -4,18 +4,17 @@
  */
 package com.sptech.cybervision;
 
-import com.sptech.cybervision.Conexao;
-import com.sptech.cybervision.Usuario;
+import com.sptech.cybervision.AssociarMaquina;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  *
  * @author bruno
  */
 public class Login extends javax.swing.JFrame {
-    Usuario usuario = new Usuario();
     Conexao conexao = new Conexao();
     AssociarMaquina associar = new AssociarMaquina();
 
@@ -71,11 +70,9 @@ public class Login extends javax.swing.JFrame {
         lbl_email.setForeground(new java.awt.Color(34, 35, 89));
         lbl_email.setText("Email:");
 
-        inputEmail.setBackground(new java.awt.Color(254, 254, 254));
         inputEmail.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
         inputEmail.setCaretColor(new java.awt.Color(254, 254, 254));
         inputEmail.addActionListener(new java.awt.event.ActionListener() {
-
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inputEmailActionPerformed(evt);
             }
@@ -165,11 +162,16 @@ public class Login extends javax.swing.JFrame {
 
     private void btn_entrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_entrarActionPerformed
         // TODO add your handling code here:
+        
         String emailDigitado = inputEmail.getText();
         String senhaDigitada = new String(inputSenha.getPassword());
-
+        
+        
         try {
             Map<String, Object> registro = conexao.jdbcTemplate.queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
+          
+            
+            Usuario usuario = new Usuario(emailDigitado, senhaDigitada);
             this.dispose();
             associar.setVisible(true);
 
@@ -177,6 +179,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
 
         }
+       
     }//GEN-LAST:event_btn_entrarActionPerformed
 
     /**

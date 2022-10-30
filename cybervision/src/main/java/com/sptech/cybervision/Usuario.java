@@ -4,35 +4,30 @@
  */
 package com.sptech.cybervision;
 
-import java.util.List;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.sptech.cybervision.Login;
+import com.sptech.cybervision.AssociarMaquina;
+import com.sptech.cybervision.Conexao;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
  * @author leona
  */
 public class Usuario {
-    private Integer idUsuario;
+
     private String nome;
     private String email;
     private String senha;
+    private String nivelAcesso;
 
+    Conexao conexao = new Conexao();
+    AssociarMaquina associar = new AssociarMaquina();
 
-    public Integer getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
+    public Usuario(String email, String senha) {
+        this.email = email;
+        this.senha = senha;
     }
 
     public String getEmail() {
@@ -50,12 +45,5 @@ public class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-    
-    
-    
-    
 
-   
-    
-    
 }

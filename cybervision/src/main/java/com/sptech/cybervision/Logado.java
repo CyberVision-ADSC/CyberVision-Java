@@ -4,6 +4,8 @@
  */
 package com.sptech.cybervision;
 
+import com.sptech.cybervision.Chamados;
+
 /**
  *
  * @author bruno
