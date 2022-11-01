@@ -24,13 +24,13 @@ public class Conexao {
         BasicDataSource dataSource = new BasicDataSource();
         
         //CONEXÃO MYSQL
-        //dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-      //  dataSource.setUrl("jdbc:mysql://localhost:3306/cybervision");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/cybervision");
 
-       // dataSource.setUsername("root");
+        dataSource.setUsername("root");
 
-      //  dataSource.setPassword("nacagawa1333");
+        dataSource.setPassword("urubu100");
         
         
         //CONEXÃO SQLSERVER AZURE
@@ -44,13 +44,13 @@ public class Conexao {
         
         
         //CONEXÃO DOCKER
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        //dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-        dataSource.setUrl("jdbc:mysql://172.17.0.2:3306/cybervision");
+        //dataSource.setUrl("jdbc:mysql://172.17.0.2:3306/cybervision");
 
-        dataSource.setUsername("root");
+        //dataSource.setUsername("root");
 
-        dataSource.setPassword("urubu100");
+        //dataSource.setPassword("urubu100");
 
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
