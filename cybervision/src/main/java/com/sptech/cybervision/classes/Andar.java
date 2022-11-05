@@ -22,10 +22,9 @@ public class Andar {
         this.salas = new ArrayList<>();
     }
 
-    public Andar(String identificadorAndar, String descricao, List<Sala> salas) {
-        this.identificadorAndar = identificadorAndar;
-        this.descricao = descricao;
-        this.salas = salas;
+    public void adicionarSala(Sala sala){
+        salas.add(sala);
+    
     }
 
     public String getIdentificadorAndar() {
@@ -50,6 +49,11 @@ public class Andar {
 
     public void setSalas(List<Sala> salas) {
         this.salas = salas;
+    }
+
+    @Override
+    public String toString() {
+        return "Andar{" + "identificadorAndar=" + identificadorAndar + ", descricao=" + descricao + ", salas=" + salas + '}';
     }
     
     

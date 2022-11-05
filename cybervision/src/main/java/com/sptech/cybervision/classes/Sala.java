@@ -22,10 +22,12 @@ public class Sala {
         this.computadores = new ArrayList<>();
     }
 
-    public Sala(String identificadorSala, String descricao, List<Computador> computadores) {
-        this.identificadorSala = identificadorSala;
-        this.descricao = descricao;
-        this.computadores = computadores;
+    public Sala() {
+    }
+
+    public void adicionarComputador(Computador computador){
+        computadores.add(computador);
+        
     }
 
     public String getIdentificadorSala() {
@@ -50,6 +52,11 @@ public class Sala {
 
     public void setComputadores(List<Computador> computadores) {
         this.computadores = computadores;
+    }
+
+    @Override
+    public String toString() {
+        return "Sala{" + "identificadorSala=" + identificadorSala + ", descricao=" + descricao + ", computadores=" + computadores + '}';
     }
     
     

@@ -27,6 +27,7 @@ public class Usuario {
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     Logado logado = new Logado();
+    Sala sala = new Sala();
 
     public Usuario(String nome, String email, String senha, String nivelAcesso) {
         this.nome = nome;
@@ -57,6 +58,8 @@ public class Usuario {
             Computador computador = new Computador(hostName, nomeProcessador,
                     arquitetura, fabricante, memoriaRam, tamanhoDisco,
                     sistemaOperacional, true);
+            
+           // sala.adicionarComputador(computador);
             
             System.out.println(computador.toString());
             

@@ -5,16 +5,14 @@
 package com.sptech.cybervision.view;
 
 import com.sptech.cybervision.view.Logado;
-import com.sptech.cybervision.classes.Computador;
 import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.discos.Volume;
+import com.sptech.cybervision.classes.Andar;
+import com.sptech.cybervision.classes.Faculdade;
+import com.sptech.cybervision.classes.Sala;
 import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import javax.swing.JOptionPane;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -27,7 +25,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
     Looca looca = new Looca();
     Conexao conexao = new Conexao();
     Logado logado = new Logado();
-  
+    Faculdade faculdade = new Faculdade();
 
     /**
      * Creates new form Logado
@@ -157,21 +155,42 @@ public class AssociarMaquina extends javax.swing.JFrame {
         // TODO add your handling code here:
         String hostName = inputHostName.getText();
         Usuario usuario = new Usuario();
-        
+
         try {
             Map<String, Object> registroHost = conexao.getConnection().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
-        
-        usuario.associarMaquina(hostName);
-        
-        this.dispose();
-        logado.setVisible(true);
-        
-        }catch (EmptyResultDataAccessException e) {
+
+            List<Map<String, Object>> listaComputador = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostName);
+            Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
+
+            List<Map<String, Object>> listaSala = conexao.getConnection().queryForList("select * from sala where id_sala = ?", fkSala);
+            String identificadorSala = listaSala.get(0).get("identificador_sala").toString();
+            String descricaoSala = listaSala.get(0).get("descricao_sala").toString();
+            Integer fkAndar = Integer.parseInt(listaSala.get(0).get("fk_andar").toString());
+
+            Sala sala = new Sala(identificadorSala, descricaoSala);
+
+            List<Map<String, Object>> listaAndar = conexao.getConnection().queryForList("select * from andar where id_andar = ?", fkAndar);
+            String identificadorAndar = listaAndar.get(0).get("identificador_andar").toString();
+            String descricaoAndar = listaAndar.get(0).get("descricao_andar").toString();
+
+            Andar andar = new Andar(identificadorAndar, descricaoAndar);
+           // faculdade.adicionarAndar(andar);
+            andar.adicionarSala(sala);
+            
+            System.out.println(andar);
+            System.out.println(sala);
+
+            usuario.associarMaquina(hostName);
+
+            this.dispose();
+            logado.setVisible(true);
+
+        } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Hostname não encontrado!");
-        
+
         }
-        
+
 
     }//GEN-LAST:event_btn_associarActionPerformed
 

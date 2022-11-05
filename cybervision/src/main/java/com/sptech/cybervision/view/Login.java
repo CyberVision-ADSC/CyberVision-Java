@@ -4,20 +4,20 @@
  */
 package com.sptech.cybervision.view;
 
+import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 /**
  *
  * @author bruno
  */
 public class Login extends javax.swing.JFrame {
+
     Conexao conexao = new Conexao();
     AssociarMaquina associar = new AssociarMaquina();
 
@@ -165,26 +165,37 @@ public class Login extends javax.swing.JFrame {
 
     private void btn_entrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_entrarActionPerformed
         // TODO add your handling code here:
-        
+
         String emailDigitado = inputEmail.getText();
         String senhaDigitada = new String(inputSenha.getPassword());
-        
-        
-        
+
         try {
-            Map<String,Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
-            
-            List<Map<String, Object>> lista = conexao.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
-        
-            String nomeUsuario = lista.get(0).get("nome").toString();
-            String nivelAcesso = lista.get(0).get("tipo_usuario").toString();
-           
+            Map<String, Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
+
+            List<Map<String, Object>> listaUsuario = conexao.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
+
+            String nomeUsuario = listaUsuario.get(0).get("nome").toString();
+            String nivelAcesso = listaUsuario.get(0).get("tipo_usuario").toString();
+            Integer fkFaculdade = Integer.parseInt(listaUsuario.get(0).get("fk_faculdade").toString());
+
+            List<Map<String, Object>> listaFaculdade = conexao.getConnection().queryForList("select * from faculdade where id_faculdade = ?", fkFaculdade);
+
+            String nomeFantasia = listaFaculdade.get(0).get("nome_fantasia").toString();
+            String razaoSocial = listaFaculdade.get(0).get("razao_social").toString();
+            String cnpj = listaFaculdade.get(0).get("cnpj").toString();
+            String cep = listaFaculdade.get(0).get("cep").toString();
+            Integer numero = Integer.parseInt(listaFaculdade.get(0).get("numero").toString());
+
+            Faculdade faculdade = new Faculdade(nomeFantasia, razaoSocial, cnpj, cep, numero);
+
             Usuario usuario = new Usuario(nomeUsuario, emailDigitado, senhaDigitada, nivelAcesso);
+
+            faculdade.adicionarUsuario(usuario);
             
+            System.out.println(faculdade);
             System.out.println(usuario);
             System.out.println("LOGOU");
-           
-            
+
             this.dispose();
             associar.setVisible(true);
 
@@ -192,7 +203,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
 
         }
-       
+
     }//GEN-LAST:event_btn_entrarActionPerformed
 
     /**

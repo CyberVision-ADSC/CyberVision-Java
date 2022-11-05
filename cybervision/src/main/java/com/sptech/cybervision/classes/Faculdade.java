@@ -12,7 +12,6 @@ import java.util.List;
  * @author leona
  */
 public class Faculdade {
-    private Integer idFaculdade;
     private String nomeFantasia;
     private String razaoSocial;
     private String cnpj;
@@ -21,8 +20,7 @@ public class Faculdade {
     private List<Usuario> usuarios;
     private List<Andar> andares;
 
-    public Faculdade(Integer idFaculdade, String nomeFantasia, String razaoSocial, String cnpj, String cep, Integer numero) {
-        this.idFaculdade = idFaculdade;
+    public Faculdade( String nomeFantasia, String razaoSocial, String cnpj, String cep, Integer numero) {
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
         this.cnpj = cnpj;
@@ -31,16 +29,22 @@ public class Faculdade {
         this.andares = new ArrayList<>();
         this.usuarios = new ArrayList<>();
     }
+
+    public Faculdade() {
+    }
     
     
-
-    public Integer getIdFaculdade() {
-        return idFaculdade;
+    
+    public void adicionarUsuario(Usuario usuario){
+    
+        usuarios.add(usuario);
     }
-
-    public void setIdFaculdade(Integer idFaculdade) {
-        this.idFaculdade = idFaculdade;
+    
+    public void adicionarAndar(Andar andar){
+        
+        andares.add(andar);
     }
+    
 
     public String getNomeFantasia() {
         return nomeFantasia;
@@ -96,6 +100,11 @@ public class Faculdade {
 
     public void setAndares(List<Andar> andares) {
         this.andares = andares;
+    }
+
+    @Override
+    public String toString() {
+        return "Faculdade{" + "nomeFantasia=" + nomeFantasia + ", razaoSocial=" + razaoSocial + ", cnpj=" + cnpj + ", cep=" + cep + ", numero=" + numero + ", usuarios=" + usuarios + ", andares=" + andares + '}';
     }
     
     
