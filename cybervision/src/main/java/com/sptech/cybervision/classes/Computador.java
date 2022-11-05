@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.sptech.cybervision;
+package com.sptech.cybervision.classes;
 
 import com.sptech.cybervision.classes.Processo;
 import com.sptech.cybervision.classes.Relatorio;
@@ -38,6 +38,29 @@ public class Computador {
         this.relatorios = new ArrayList<>();
         this.processos = new ArrayList<>();
 
+    }
+
+    public Computador(String hostname, String processador, Integer arquitetura, String fabricante, Long ram, Long disco, String sistemaOperacional, Boolean ativo, List<Relatorio> relatorios, List<Processo> processos) {
+        this.hostname = hostname;
+        this.processador = processador;
+        this.arquitetura = arquitetura;
+        this.fabricante = fabricante;
+        this.ram = ram;
+        this.disco = disco;
+        this.sistemaOperacional = sistemaOperacional;
+        this.ativo = ativo;
+        this.relatorios = relatorios;
+        this.processos = processos;
+    }
+    
+    public void coletarRelatorios(){
+        
+    
+    }
+    
+    public void coletarProcessos(){
+    
+    
     }
 
     public String getHostname() {

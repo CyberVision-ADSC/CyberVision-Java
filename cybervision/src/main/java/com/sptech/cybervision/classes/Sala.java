@@ -4,7 +4,6 @@
  */
 package com.sptech.cybervision.classes;
 
-import com.sptech.cybervision.Computador;
 import java.util.ArrayList;
 import java.util.List;
 

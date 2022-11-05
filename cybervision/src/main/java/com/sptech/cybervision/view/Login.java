@@ -2,9 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.sptech.cybervision;
+package com.sptech.cybervision.view;
 
-import com.sptech.cybervision.AssociarMaquina;
+import com.sptech.cybervision.classes.Usuario;
+import com.sptech.cybervision.conexoes.Conexao;
+import java.sql.ResultSet;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -168,10 +170,9 @@ public class Login extends javax.swing.JFrame {
         
         
         try {
-            Map<String, Object> registro = conexao.jdbcTemplate.queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
-          
+            Map<String,Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
             
-            Usuario usuario = new Usuario(emailDigitado, senhaDigitada);
+            
             this.dispose();
             associar.setVisible(true);
 

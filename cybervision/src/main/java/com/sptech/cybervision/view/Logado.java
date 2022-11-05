@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.sptech.cybervision;
+package com.sptech.cybervision.view;
 
-import com.sptech.cybervision.Chamados;
+import com.sptech.cybervision.view.Chamados;
 
 /**
  *

@@ -22,7 +22,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.sptech.cybervision.Login</mainClass>
+                            <mainClass>com.sptech.cybervision.view.Login</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

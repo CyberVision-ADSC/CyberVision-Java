@@ -2,10 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.sptech.cybervision;
+package com.sptech.cybervision.view;
 
+import com.sptech.cybervision.view.Logado;
+import com.sptech.cybervision.classes.Computador;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
+import com.sptech.cybervision.conexoes.Conexao;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -160,12 +163,11 @@ public class AssociarMaquina extends javax.swing.JFrame {
         String sistemaOperacional = looca.getSistema().getSistemaOperacional();
 
         try {
-            Map<String, Object> registroHost = conexao.jdbcTemplate.queryForMap(
+            Map<String, Object> registroHost = conexao.getConnection().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
             
-            Computador computador = new Computador(hostName, nomeProcessador, arquitetura, fabricante, memoriaRam, tamanhoDisco, sistemaOperacional, true);
 
-            conexao.jdbcTemplate.update(
+            conexao.getConnection().update(
                     "UPDATE computador SET processador = ?, arquitetura = ?, "
                     + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
                     + "ativo = ? WHERE hostname = ?",
@@ -193,7 +195,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                     String dataHora = dtf.format(LocalDateTime.now());
 
-                    int rowInsertedRelatorio = conexao.jdbcTemplate.update(
+                    int rowInsertedRelatorio = conexao.getConnection().update(
                             "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, problema_cpu,"
                             + " problema_disco, problema_memoria, problema_fisico, data_hora, fk_computador,"
                             + " fk_sala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -210,7 +212,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
                         Double usoCpuProcesso = processo.getUsoCpu();
                         Double usoMemoriaProcesso = processo.getUsoMemoria();
 
-                        int rowsInsertedProcess = conexao.jdbcTemplate.update(
+                        int rowsInsertedProcess = conexao.getConnection().update(
                                 "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
                                 + " VALUES (?, ?, ?, ?, ?)",
                                 pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);

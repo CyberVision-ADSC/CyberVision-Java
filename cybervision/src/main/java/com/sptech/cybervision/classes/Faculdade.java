@@ -4,7 +4,6 @@
  */
 package com.sptech.cybervision.classes;
 
-import com.sptech.cybervision.Usuario;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import java.util.List;
  * @author leona
  */
 public class Faculdade {
+    private Integer idFaculdade;
     private String nomeFantasia;
     private String razaoSocial;
     private String cnpj;
@@ -20,27 +20,26 @@ public class Faculdade {
     private Integer numero;
     private List<Usuario> usuarios;
     private List<Andar> andares;
-    
-    
-    
-     public Faculdade(String nomeFantasia, String razaoSocial, String cnpj, String cep, Integer numero) {
+
+    public Faculdade(Integer idFaculdade, String nomeFantasia, String razaoSocial, String cnpj, String cep, Integer numero) {
+        this.idFaculdade = idFaculdade;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
         this.cnpj = cnpj;
         this.cep = cep;
         this.numero = numero;
-        this.usuarios = new ArrayList<>();
         this.andares = new ArrayList<>();
+        this.usuarios = new ArrayList<>();
+    }
+    
+    
+
+    public Integer getIdFaculdade() {
+        return idFaculdade;
     }
 
-    public Faculdade(String nomeFantasia, String razaoSocial, String cnpj, String cep, Integer numero, List<Usuario> usuarios, List<Andar> andares) {
-        this.nomeFantasia = nomeFantasia;
-        this.razaoSocial = razaoSocial;
-        this.cnpj = cnpj;
-        this.cep = cep;
-        this.numero = numero;
-        this.usuarios = usuarios;
-        this.andares = andares;
+    public void setIdFaculdade(Integer idFaculdade) {
+        this.idFaculdade = idFaculdade;
     }
 
     public String getNomeFantasia() {

@@ -2,7 +2,15 @@ package com.sptech.cybervision;
 
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.sistema.Sistema;
+import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.classes.Faculdade;
+import com.sptech.cybervision.conexoes.Conex;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -16,79 +24,11 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
 
-        Looca looca = new Looca();
-        Sistema sistema = looca.getSistema();
- 
+        Conex conex = new Conex();
         
-       
-//
-//        System.out.println(looca.getGrupoDeProcessos().getTotalProcessos());
-//        System.out.println(looca.getGrupoDeProcessos().getTotalThreads());
+     
+
         
-        
-//        System.out.println(looca.getGrupoDeDiscos().getVolumes());
-//        System.out.println(looca.getGrupoDeProcessos().getProcessos());
-//        looca.getGrupoDeProcessos().getProcessos().forEach(processo ->{
-//            System.out.println(processo.getUsoCpu());
-//        
-//        });
-//           System.out.println(looca.getGrupoDeDiscos().getVolumes());
-//           Long totalVolume = Long.MAX_VALUE - Long.MAX_VALUE;
-//                   
-//         for(Volume volume : looca.getGrupoDeDiscos().getVolumes()){
-//             totalVolume += volume.getTotal();
-//             
-//         
-//         }
-//         System.out.println(totalVolume);
-////         
-//         Long totalVolumeDisponivel = Long.MAX_VALUE - Long.MAX_VALUE;         
-//         for(Volume volume : looca.getGrupoDeDiscos().getVolumes()){
-//             System.out.println(volume.getDisponivel());
-//        
-//        }
-       
-//         
-//         Long totalDiscoUsado = totalVolume - totalVolumeDisponivel;
-//         
-//         System.out.println(totalDiscoUsado);
-        
-//        for(Processo processo : looca.getGrupoDeProcessos().getProcessos()){
-//            System.out.println(processo.getUsoCpu());
-//        }
 
-//            for(Processo processo : looca.getGrupoDeProcessos().getProcessos()){
-//               
-//                
-//            }
-
-
-
-//        System.out.println(looca.getProcessador().getNome());
-//        System.out.println(looca.getSistema().getArquitetura());
-//        System.out.println(looca.getSistema().getFabricante());
-//        System.out.println(looca.getMemoria().getTotal());
-//        System.out.println(looca.getGrupoDeDiscos().getTamanhoTotal());
-//        System.out.println(looca.getSistema().getSistemaOperacional());
-//        System.out.println(looca.getProcessador().getUso());
-//        System.out.println(looca.getGrupoDeDiscos().getTamanhoTotal());
-//        System.out.println(looca.getGrupoDeDiscos().getDiscos());
-//        System.out.println(looca.getMemoria().getEmUso());
-
-//        DiscosGroup grupoDeDiscos = looca.getGrupoDeDiscos();
-//
-//        List<Disco> discos = grupoDeDiscos.getDiscos();
-//
-//        for (Disco disco : discos) {
-//            System.out.println(disco);
-//        }
-//
-//        ProcessosGroup grupoDeProcessos = looca.getGrupoDeProcessos();
-//
-//        List<Processo> processos = grupoDeProcessos.getProcessos();
-//
-//        for (Processo processo : processos) {
-//            System.out.println(processo);
-//        }
     }
 }
