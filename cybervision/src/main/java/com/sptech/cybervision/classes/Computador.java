@@ -4,10 +4,19 @@
  */
 package com.sptech.cybervision.classes;
 
+import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.discos.Volume;
 import com.sptech.cybervision.classes.Processo;
 import com.sptech.cybervision.classes.Relatorio;
+import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.view.AssociarMaquina;
+import com.sptech.cybervision.view.Logado;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -40,28 +49,74 @@ public class Computador {
 
     }
 
-    public Computador(String hostname, String processador, Integer arquitetura, String fabricante, Long ram, Long disco, String sistemaOperacional, Boolean ativo, List<Relatorio> relatorios, List<Processo> processos) {
-        this.hostname = hostname;
-        this.processador = processador;
-        this.arquitetura = arquitetura;
-        this.fabricante = fabricante;
-        this.ram = ram;
-        this.disco = disco;
-        this.sistemaOperacional = sistemaOperacional;
-        this.ativo = ativo;
-        this.relatorios = relatorios;
-        this.processos = processos;
+    public Computador() {
     }
-    
-    public void coletarRelatorios(){
-        
-    
+
+    Conexao conexao = new Conexao();
+    AssociarMaquina associar = new AssociarMaquina();
+    Looca looca = new Looca();
+    Logado logado = new Logado();
+
+    public void coletarRelatoriosProcessos() {
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                Long totalDisco = Long.MAX_VALUE - Long.MAX_VALUE;
+                Long totalDiscoDisponivel = Long.MAX_VALUE - Long.MAX_VALUE;
+
+                for (Volume volume : looca.getGrupoDeDiscos().getVolumes()) {
+                    totalDisco += volume.getTotal();
+                }
+
+                for (Volume volume : looca.getGrupoDeDiscos().getVolumes()) {
+                    totalDiscoDisponivel += volume.getDisponivel();
+                }
+
+                Double usoCpu = looca.getProcessador().getUso();
+                Long usoDisco = (totalDisco - totalDiscoDisponivel) / 1000000;
+                Long usoRam = looca.getMemoria().getEmUso() / 1000000;
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                String dataHora = dtf.format(LocalDateTime.now());
+
+                conexao.getConnection().update(
+                        "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, problema_cpu,"
+                        + " problema_disco, problema_memoria, problema_fisico, data_hora, fk_computador,"
+                        + " fk_sala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        usoCpu, usoDisco, usoRam, false, false, false, false,
+                        dataHora, null, null);
+
+                Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, true, true, true, false, dataHora);
+                relatorios.add(relatorio);
+
+                System.out.println(relatorio);
+
+                for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
+                    Integer pidProcesso = processo.getPid();
+                    String nomeProcesso = processo.getNome();
+                    Double usoCpuProcesso = processo.getUsoCpu();
+                    Double usoMemoriaProcesso = processo.getUsoMemoria();
+
+                    conexao.getConnection().update(
+                            "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
+                            + " VALUES (?, ?, ?, ?, ?)",
+                            pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);
+
+                    Processo process = new Processo(pidProcesso, nomeProcesso,
+                            usoCpuProcesso, usoMemoriaProcesso);
+
+                    processos.add(process);
+
+                    System.out.println(process);
+
+                }
+
+            }
+        }, 0, 5000);
+
     }
-    
-    public void coletarProcessos(){
-    
-    
-    }
+
 
     public String getHostname() {
         return hostname;
@@ -141,6 +196,11 @@ public class Computador {
 
     public void setProcessos(List<Processo> processos) {
         this.processos = processos;
+    }
+
+    @Override
+    public String toString() {
+        return "Computador{" + "hostname=" + hostname + ", processador=" + processador + ", arquitetura=" + arquitetura + ", fabricante=" + fabricante + ", ram=" + ram + ", disco=" + disco + ", sistemaOperacional=" + sistemaOperacional + ", ativo=" + ativo + ", relatorios=" + relatorios + ", processos=" + processos + '}';
     }
 
 }

@@ -18,9 +18,9 @@ public class Relatorio {
     private Boolean problemaDisco;
     private Boolean problemaRam;
     private Boolean problemaFisico;
-    private LocalDateTime dataHora;
+    private String dataHora;
 
-    public Relatorio(Double usoCpu, Long usoDisco, Long usoRam, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaRam, Boolean problemaFisico, LocalDateTime dataHora) {
+    public Relatorio(Double usoCpu, Long usoDisco, Long usoRam, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaRam, Boolean problemaFisico, String dataHora) {
         this.usoCpu = usoCpu;
         this.usoDisco = usoDisco;
         this.usoRam = usoRam;
@@ -30,6 +30,9 @@ public class Relatorio {
         this.problemaFisico = problemaFisico;
         this.dataHora = dataHora;
     }
+
+   
+    
 
     public Double getUsoCpu() {
         return usoCpu;
@@ -87,13 +90,20 @@ public class Relatorio {
         this.problemaFisico = problemaFisico;
     }
 
-    public LocalDateTime getDataHora() {
+    public String getDataHora() {
         return dataHora;
     }
 
-    public void setDataHora(LocalDateTime dataHora) {
+    public void setDataHora(String dataHora) {
         this.dataHora = dataHora;
     }
+
+    @Override
+    public String toString() {
+        return "Relatorio{" + "usoCpu=" + usoCpu + ", usoDisco=" + usoDisco + ", usoRam=" + usoRam + ", problemaCpu=" + problemaCpu + ", problemaDisco=" + problemaDisco + ", problemaRam=" + problemaRam + ", problemaFisico=" + problemaFisico + ", dataHora=" + dataHora + '}';
+    }
+
+   
     
     
     

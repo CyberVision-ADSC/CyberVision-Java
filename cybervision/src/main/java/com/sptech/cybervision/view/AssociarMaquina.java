@@ -8,6 +8,7 @@ import com.sptech.cybervision.view.Logado;
 import com.sptech.cybervision.classes.Computador;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
+import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +27,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
     Looca looca = new Looca();
     Conexao conexao = new Conexao();
     Logado logado = new Logado();
+  
 
     /**
      * Creates new form Logado
@@ -153,86 +155,23 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
     private void btn_associarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_associarActionPerformed
         // TODO add your handling code here:
-
         String hostName = inputHostName.getText();
-        String nomeProcessador = looca.getProcessador().getNome();
-        Integer arquitetura = looca.getSistema().getArquitetura();
-        String fabricante = looca.getSistema().getFabricante();
-        Long memoriaRam = looca.getMemoria().getTotal() / 1000000;
-        Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / 1000000;
-        String sistemaOperacional = looca.getSistema().getSistemaOperacional();
-
+        Usuario usuario = new Usuario();
+        
         try {
             Map<String, Object> registroHost = conexao.getConnection().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
-            
-
-            conexao.getConnection().update(
-                    "UPDATE computador SET processador = ?, arquitetura = ?, "
-                    + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
-                    + "ativo = ? WHERE hostname = ?",
-                    nomeProcessador, arquitetura, fabricante, memoriaRam,
-                    tamanhoDisco, sistemaOperacional, true, hostName);
-
-            new Timer().scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-
-                    Long totalDisco = Long.MAX_VALUE - Long.MAX_VALUE;
-                    Long totalDiscoDisponivel = Long.MAX_VALUE - Long.MAX_VALUE;
-
-                    for (Volume volume : looca.getGrupoDeDiscos().getVolumes()) {
-                        totalDisco += volume.getTotal();
-                    }
-
-                    for (Volume volume : looca.getGrupoDeDiscos().getVolumes()) {
-                        totalDiscoDisponivel += volume.getDisponivel();
-                    }
-
-                    Double usoCpu = looca.getProcessador().getUso();
-                    Long usoDisco = (totalDisco - totalDiscoDisponivel) / 1000000;
-                    Long usoRam = looca.getMemoria().getEmUso() / 1000000;
-                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-                    String dataHora = dtf.format(LocalDateTime.now());
-
-                    int rowInsertedRelatorio = conexao.getConnection().update(
-                            "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, problema_cpu,"
-                            + " problema_disco, problema_memoria, problema_fisico, data_hora, fk_computador,"
-                            + " fk_sala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            usoCpu, usoDisco, usoRam, false, false, false, false,
-                            dataHora, null, null);
-
-                    if (rowInsertedRelatorio > 0) {
-                        System.out.println("relatorio inserido com sucesso");
-                    }
-
-                    for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
-                        Integer pidProcesso = processo.getPid();
-                        String nomeProcesso = processo.getNome();
-                        Double usoCpuProcesso = processo.getUsoCpu();
-                        Double usoMemoriaProcesso = processo.getUsoMemoria();
-
-                        int rowsInsertedProcess = conexao.getConnection().update(
-                                "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
-                                + " VALUES (?, ?, ?, ?, ?)",
-                                pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);
-
-                        if (rowsInsertedProcess > 0) {
-                            System.out.println("processo inserido com sucesso");
-                        }
-
-                    }
-                }
-            }, 0, 5000);
-
-            this.dispose();
-            logado.setVisible(true);
-
-        } catch (EmptyResultDataAccessException e) {
+        
+        usuario.associarMaquina(hostName);
+        
+        this.dispose();
+        logado.setVisible(true);
+        
+        }catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Hostname não encontrado!");
-
+        
         }
-
+        
 
     }//GEN-LAST:event_btn_associarActionPerformed
 

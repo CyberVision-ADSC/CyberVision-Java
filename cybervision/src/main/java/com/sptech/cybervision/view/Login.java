@@ -7,6 +7,7 @@ package com.sptech.cybervision.view;
 import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -169,9 +170,20 @@ public class Login extends javax.swing.JFrame {
         String senhaDigitada = new String(inputSenha.getPassword());
         
         
+        
         try {
             Map<String,Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
             
+            List<Map<String, Object>> lista = conexao.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
+        
+            String nomeUsuario = lista.get(0).get("nome").toString();
+            String nivelAcesso = lista.get(0).get("tipo_usuario").toString();
+           
+            Usuario usuario = new Usuario(nomeUsuario, emailDigitado, senhaDigitada, nivelAcesso);
+            
+            System.out.println(usuario);
+            System.out.println("LOGOU");
+           
             
             this.dispose();
             associar.setVisible(true);

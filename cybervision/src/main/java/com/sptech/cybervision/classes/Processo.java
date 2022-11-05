@@ -52,6 +52,11 @@ public class Processo {
     public void setUsoMemoria(Double usoMemoria) {
         this.usoMemoria = usoMemoria;
     }
+
+    @Override
+    public String toString() {
+        return "Processo{" + "pid=" + pid + ", nomeProcesso=" + nomeProcesso + ", usoCpu=" + usoCpu + ", usoMemoria=" + usoMemoria + '}';
+    }
     
     
     

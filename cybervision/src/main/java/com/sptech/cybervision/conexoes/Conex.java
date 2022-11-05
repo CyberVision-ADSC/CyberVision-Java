@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static javax.swing.UIManager.getInt;
@@ -23,7 +25,7 @@ public class Conex {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection cone = DriverManager.getConnection("jdbc:mysql://localhost:3306/cybervision", "root", "nacagawa1333");
             
-            ResultSet resultSet = cone.createStatement().executeQuery("select count(id_faculdade) from faculdade");
+//            List<Map<String, Object>> lista = ("select * from tbl_pais");
             
           
         } catch(ClassNotFoundException ex){

@@ -8,6 +8,7 @@ import com.sptech.cybervision.conexoes.Conex;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -24,8 +25,16 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
 
-        Conex conex = new Conex();
+        Conexao conexao = new Conexao();
         
+        
+        List<Map<String, Object>> lista = conexao.getConnection().queryForList("select * from faculdade");
+        
+        System.out.println(lista.get(0).get("nome_fantasia"));
+        
+        String armazenar = lista.get(0).get("nome_fantasia").toString();
+        
+        System.out.println(armazenar);
      
 
         
