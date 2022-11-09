@@ -201,7 +201,7 @@ public class Login extends javax.swing.JFrame {
 
         } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
-
+            e.printStackTrace();
         }
 
     }//GEN-LAST:event_btn_entrarActionPerformed
