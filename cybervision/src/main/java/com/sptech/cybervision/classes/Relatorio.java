@@ -31,8 +31,6 @@ public class Relatorio {
         this.dataHora = dataHora;
     }
 
-   
-    
 
     public Integer getUsoCpu() {
         return usoCpu;

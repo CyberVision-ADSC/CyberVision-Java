@@ -12,8 +12,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -31,6 +33,7 @@ public class Computador {
     private Boolean ativo;
     private List<Relatorio> relatorios;
     private List<Processo> processos;
+    private Integer contadorRelatorios = 10;
 
     public Computador(String hostname, String processador, Integer arquitetura, String fabricante, Long ram, Long disco, String sistemaOperacional, Boolean ativo) {
         this.hostname = hostname;
@@ -58,7 +61,7 @@ public class Computador {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                
+                Long converteGiga = 1073741824L;
                 Long converteMega = 1048576L;
                 Long totalDisco = 0L;
                 Long totalDiscoDisponivel = 0L;
@@ -71,28 +74,61 @@ public class Computador {
                     totalDiscoDisponivel += volume.getDisponivel();
                 }
 
+                Long totalDiscoGiga = totalDisco / converteGiga;
+
+                Long totalDiscoDisponivelGiga = totalDiscoDisponivel / converteGiga;
+
+                Long multiplicacaoDiscoDisponivelX100 = totalDiscoDisponivelGiga * 100;
+
+                Long divisaoMultiporDiscoGiga = multiplicacaoDiscoDisponivelX100 / totalDiscoGiga;
+
+                Long totalRam = looca.getMemoria().getTotal() / 1048576L;
+
+                Long usoRamTotal = looca.getMemoria().getEmUso() / 1048576L;
+
+                Long multiplicacaoUsoXCem = usoRamTotal * 100;
+
                 Integer usoCpu = looca.getProcessador().getUso().intValue();
-                Long usoDisco = (totalDisco - totalDiscoDisponivel) / converteMega;
-                Long usoRam = looca.getMemoria().getEmUso() / converteMega;
+                Long usoDisco = 100 - divisaoMultiporDiscoGiga;
+                Long usoRam = multiplicacaoUsoXCem / totalRam;
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 String dataHora = dtf.format(LocalDateTime.now());
-                
+
                 //IMPLEMENTAR ALERTAS
-                
+                Boolean problemaCpu = false;
+                Boolean problemaDisco = false;
+                Boolean problemaMemoria = false;
+
+                if (usoDisco >= 90) {
+                    problemaDisco = true;
+                }
+
+                if (usoRam >= 90) {
+                    problemaMemoria = true;
+                }
+
+                if (usoCpu >= 80) {
+                    contadorRelatorios--;
+
+                } else {
+                    contadorRelatorios = 10;
+                }
+
+                if (contadorRelatorios == 0) {
+                    problemaCpu = true;
+                }
 
                 conexao.getConnection().update(
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, problema_cpu,"
                         + " problema_disco, problema_memoria, problema_fisico, data_hora, fk_computador,"
                         + " fk_sala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        usoCpu, usoDisco, usoRam, false, false, false, false,
+                        usoCpu, usoDisco, usoRam, problemaCpu, problemaDisco, problemaMemoria, false,
                         dataHora, fkComputador, fkSala);
 
                 Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, true, true, true, false, dataHora);
                 relatorios.add(relatorio);
 
                 System.out.println(relatorio);
-                
-                
 
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
@@ -100,17 +136,28 @@ public class Computador {
                     Double usoCpuProcesso = processo.getUsoCpu();
                     Double usoMemoriaProcesso = processo.getUsoMemoria();
 
-                    conexao.getConnection().update(
-                            "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
-                            + " VALUES (?, ?, ?, ?, ?)",
-                            pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, fkComputador);
+                    List<Map<String, Object>> registroProcesso = conexao.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
+                    
+                    if (registroProcesso.isEmpty()) {
 
-                    Processo process = new Processo(pidProcesso, nomeProcesso,
-                            usoCpuProcesso, usoMemoriaProcesso);
+                        conexao.getConnection().update(
+                                "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
+                                + " VALUES (?, ?, ?, ?, ?)",
+                                pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, fkComputador);
 
-                    processos.add(process);
+                        Processo process = new Processo(pidProcesso, nomeProcesso,
+                                usoCpuProcesso, usoMemoriaProcesso);
 
-                    System.out.println(process);
+                        processos.add(process);
+
+                        System.out.println(process);
+
+                    } else {
+                        conexao.getConnection().update(
+                                "UPDATE processo SET uso_cpu = ?, uso_memoria = ? WHERE pid = ?",
+                                usoCpuProcesso, usoMemoriaProcesso, pidProcesso);
+
+                    }
 
                 }
 
@@ -199,6 +246,14 @@ public class Computador {
         this.processos = processos;
     }
 
+    public Integer getContadorRelatorios() {
+        return contadorRelatorios;
+    }
+
+    public void setContadorRelatorios(Integer contadorRelatorios) {
+        this.contadorRelatorios = contadorRelatorios;
+    }
+
     @Override
     public String toString() {
         return "\nComputador:"
@@ -212,7 +267,7 @@ public class Computador {
                 + "\nAtivo: " + ativo
                 + "\nRelatórios: " + relatorios
                 + "\nProcessos: " + processos;
-             
+
     }
 
 }

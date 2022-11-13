@@ -45,8 +45,8 @@ public class Usuario {
         String nomeProcessador = looca.getProcessador().getNome();
         Integer arquitetura = looca.getSistema().getArquitetura();
         String fabricante = looca.getSistema().getFabricante();
-        Long memoriaRam =  looca.getMemoria().getTotal() / converteMega;
-        Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / converteMega;
+        Long memoriaRam =  looca.getMemoria().getTotal() / converteGiga;
+        Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / converteGiga;
         String sistemaOperacional = looca.getSistema().getSistemaOperacional();
 
             conexao.getConnection().update(
