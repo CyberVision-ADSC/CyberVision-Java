@@ -172,30 +172,35 @@ public class Login extends javax.swing.JFrame {
         try {
             Map<String, Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
 
+            // Instânciando usuário que logou
             List<Map<String, Object>> listaUsuario = conexao.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
-
             String nomeUsuario = listaUsuario.get(0).get("nome").toString();
             String nivelAcesso = listaUsuario.get(0).get("tipo_usuario").toString();
             Integer fkFaculdade = Integer.parseInt(listaUsuario.get(0).get("fk_faculdade").toString());
 
+            // Instânciando faculdade que o usuário pertence
             List<Map<String, Object>> listaFaculdade = conexao.getConnection().queryForList("select * from faculdade where id_faculdade = ?", fkFaculdade);
-
             String nomeFantasia = listaFaculdade.get(0).get("nome_fantasia").toString();
             String razaoSocial = listaFaculdade.get(0).get("razao_social").toString();
             String cnpj = listaFaculdade.get(0).get("cnpj").toString();
             String cep = listaFaculdade.get(0).get("cep").toString();
             Integer numero = Integer.parseInt(listaFaculdade.get(0).get("numero").toString());
 
+            // Objeto da faculdade
             Faculdade faculdade = new Faculdade(nomeFantasia, razaoSocial, cnpj, cep, numero);
 
+            // Objeto do usuário
             Usuario usuario = new Usuario(nomeUsuario, emailDigitado, senhaDigitada, nivelAcesso);
 
+            // Adicionando usuário a lista de usuários dentro da faculdade
             faculdade.adicionarUsuario(usuario);
             
+            // Printando faculdade e usuário
             System.out.println(faculdade);
             System.out.println(usuario);
-            System.out.println("LOGOU");
+            
 
+            // Trocando de tela
             this.dispose();
             associar.setVisible(true);
 

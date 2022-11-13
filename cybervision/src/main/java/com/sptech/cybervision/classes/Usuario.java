@@ -5,12 +5,10 @@
 package com.sptech.cybervision.classes;
 
 import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.util.Conversor;
 import com.sptech.cybervision.conexoes.Conexao;
 import com.sptech.cybervision.view.AssociarMaquina;
 import com.sptech.cybervision.view.Logado;
-import java.util.Map;
-import javax.swing.JOptionPane;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -28,6 +26,7 @@ public class Usuario {
     Looca looca = new Looca();
     Logado logado = new Logado();
     Sala sala = new Sala();
+   
 
     public Usuario(String nome, String email, String senha, String nivelAcesso) {
         this.nome = nome;
@@ -39,13 +38,15 @@ public class Usuario {
     public Usuario() {
     }
 
-    public void associarMaquina(String hostName) {
+    public void associarMaquina(String hostName, Integer fkComputador, Integer fkSala) {
 
+        Long converteGiga = 1073741824l;
+        Long converteMega = 1048576L;
         String nomeProcessador = looca.getProcessador().getNome();
         Integer arquitetura = looca.getSistema().getArquitetura();
         String fabricante = looca.getSistema().getFabricante();
-        Long memoriaRam = looca.getMemoria().getTotal() / 1000000;
-        Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / 1000000;
+        Long memoriaRam =  looca.getMemoria().getTotal() / converteMega;
+        Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / converteMega;
         String sistemaOperacional = looca.getSistema().getSistemaOperacional();
 
             conexao.getConnection().update(
@@ -63,7 +64,7 @@ public class Usuario {
             
             System.out.println(computador.toString());
             
-            computador.coletarRelatoriosProcessos();
+            computador.coletarRelatoriosProcessos(fkComputador, fkSala);
 
     }
 

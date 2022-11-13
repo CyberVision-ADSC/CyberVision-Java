@@ -26,6 +26,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
     Conexao conexao = new Conexao();
     Logado logado = new Logado();
     Faculdade faculdade = new Faculdade();
+   
 
     /**
      * Creates new form Logado
@@ -153,35 +154,46 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
     private void btn_associarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_associarActionPerformed
         // TODO add your handling code here:
-        String hostName = inputHostName.getText();
         Usuario usuario = new Usuario();
+        String hostName = inputHostName.getText();
 
         try {
             Map<String, Object> registroHost = conexao.getConnection().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
 
+            // Pegando fk_sala do computador cujo hostname foi inserido
             List<Map<String, Object>> listaComputador = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostName);
             Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
+            Integer fkComputador = Integer.parseInt(listaComputador.get(0).get("id_computador").toString());
 
+            // Instânciando a sala
             List<Map<String, Object>> listaSala = conexao.getConnection().queryForList("select * from sala where id_sala = ?", fkSala);
             String identificadorSala = listaSala.get(0).get("identificador_sala").toString();
             String descricaoSala = listaSala.get(0).get("descricao_sala").toString();
+
+            // Pegando fk_andar 
             Integer fkAndar = Integer.parseInt(listaSala.get(0).get("fk_andar").toString());
 
-            Sala sala = new Sala(identificadorSala, descricaoSala);
-
+            // Instânciando o andar
             List<Map<String, Object>> listaAndar = conexao.getConnection().queryForList("select * from andar where id_andar = ?", fkAndar);
             String identificadorAndar = listaAndar.get(0).get("identificador_andar").toString();
             String descricaoAndar = listaAndar.get(0).get("descricao_andar").toString();
 
+            // Objeto do andar
             Andar andar = new Andar(identificadorAndar, descricaoAndar);
-           // faculdade.adicionarAndar(andar);
+
+            // Objeto da sala
+            Sala sala = new Sala(identificadorSala, descricaoSala);
+
+
+            // faculdade.adicionarAndar(andar);
             andar.adicionarSala(sala);
-            
+
+
             System.out.println(andar);
             System.out.println(sala);
 
-            usuario.associarMaquina(hostName);
+            usuario.associarMaquina(hostName, fkComputador, fkSala);
 
             this.dispose();
             logado.setVisible(true);

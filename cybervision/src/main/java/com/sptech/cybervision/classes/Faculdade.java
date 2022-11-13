@@ -20,7 +20,7 @@ public class Faculdade {
     private List<Usuario> usuarios;
     private List<Andar> andares;
 
-    public Faculdade( String nomeFantasia, String razaoSocial, String cnpj, String cep, Integer numero) {
+    public Faculdade(String nomeFantasia, String razaoSocial, String cnpj, String cep, Integer numero) {
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
         this.cnpj = cnpj;
@@ -44,7 +44,6 @@ public class Faculdade {
         
         andares.add(andar);
     }
-    
 
     public String getNomeFantasia() {
         return nomeFantasia;

@@ -6,11 +6,8 @@ package com.sptech.cybervision.classes;
 
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
-import com.sptech.cybervision.classes.Processo;
-import com.sptech.cybervision.classes.Relatorio;
 import com.sptech.cybervision.conexoes.Conexao;
 import com.sptech.cybervision.view.AssociarMaquina;
-import com.sptech.cybervision.view.Logado;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -55,16 +52,16 @@ public class Computador {
     Conexao conexao = new Conexao();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
-    Logado logado = new Logado();
 
-    public void coletarRelatoriosProcessos() {
+    public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala) {
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
-                Long totalDisco = Long.MAX_VALUE - Long.MAX_VALUE;
-                Long totalDiscoDisponivel = Long.MAX_VALUE - Long.MAX_VALUE;
+                
+                Long converteMega = 1048576L;
+                Long totalDisco = 0L;
+                Long totalDiscoDisponivel = 0L;
 
                 for (Volume volume : looca.getGrupoDeDiscos().getVolumes()) {
                     totalDisco += volume.getTotal();
@@ -74,23 +71,28 @@ public class Computador {
                     totalDiscoDisponivel += volume.getDisponivel();
                 }
 
-                Double usoCpu = looca.getProcessador().getUso();
-                Long usoDisco = (totalDisco - totalDiscoDisponivel) / 1000000;
-                Long usoRam = looca.getMemoria().getEmUso() / 1000000;
+                Integer usoCpu = looca.getProcessador().getUso().intValue();
+                Long usoDisco = (totalDisco - totalDiscoDisponivel) / converteMega;
+                Long usoRam = looca.getMemoria().getEmUso() / converteMega;
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 String dataHora = dtf.format(LocalDateTime.now());
+                
+                //IMPLEMENTAR ALERTAS
+                
 
                 conexao.getConnection().update(
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, problema_cpu,"
                         + " problema_disco, problema_memoria, problema_fisico, data_hora, fk_computador,"
                         + " fk_sala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         usoCpu, usoDisco, usoRam, false, false, false, false,
-                        dataHora, null, null);
+                        dataHora, fkComputador, fkSala);
 
                 Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, true, true, true, false, dataHora);
                 relatorios.add(relatorio);
 
                 System.out.println(relatorio);
+                
+                
 
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
@@ -101,7 +103,7 @@ public class Computador {
                     conexao.getConnection().update(
                             "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
                             + " VALUES (?, ?, ?, ?, ?)",
-                            pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, null);
+                            pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, fkComputador);
 
                     Processo process = new Processo(pidProcesso, nomeProcesso,
                             usoCpuProcesso, usoMemoriaProcesso);
@@ -116,7 +118,6 @@ public class Computador {
         }, 0, 5000);
 
     }
-
 
     public String getHostname() {
         return hostname;
@@ -200,7 +201,18 @@ public class Computador {
 
     @Override
     public String toString() {
-        return "Computador{" + "hostname=" + hostname + ", processador=" + processador + ", arquitetura=" + arquitetura + ", fabricante=" + fabricante + ", ram=" + ram + ", disco=" + disco + ", sistemaOperacional=" + sistemaOperacional + ", ativo=" + ativo + ", relatorios=" + relatorios + ", processos=" + processos + '}';
+        return "\nComputador:"
+                + "\nHostname :" + hostname
+                + "\nProcessador: " + processador
+                + "\nArquitetura: " + arquitetura
+                + "\nFabricante: " + fabricante
+                + "\nMemória Ram: " + ram
+                + "\nDisco: " + disco
+                + "\nSistema operacional: " + sistemaOperacional
+                + "\nAtivo: " + ativo
+                + "\nRelatórios: " + relatorios
+                + "\nProcessos: " + processos;
+             
     }
 
 }

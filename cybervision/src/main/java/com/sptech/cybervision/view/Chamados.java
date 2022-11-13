@@ -9,6 +9,7 @@ package com.sptech.cybervision.view;
  * @author bruno
  */
 public class Chamados extends javax.swing.JFrame {
+   
 
     /**
      * Creates new form Chamados
@@ -38,7 +39,7 @@ public class Chamados extends javax.swing.JFrame {
         lbl_descricao = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txt_descricao = new javax.swing.JTextPane();
-        jLabel1 = new javax.swing.JLabel();
+        btn_voltar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -92,7 +93,15 @@ public class Chamados extends javax.swing.JFrame {
 
         jScrollPane1.setViewportView(txt_descricao);
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/voltar2.png"))); // NOI18N
+        btn_voltar.setBackground(new java.awt.Color(255, 255, 255));
+        btn_voltar.setForeground(new java.awt.Color(255, 255, 255));
+        btn_voltar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/voltar2.png"))); // NOI18N
+        btn_voltar.setBorder(null);
+        btn_voltar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_voltarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -101,9 +110,7 @@ public class Chamados extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
+                        .addGap(85, 85, 85)
                         .addComponent(lbl_chamado))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(73, 73, 73)
@@ -116,7 +123,10 @@ public class Chamados extends javax.swing.JFrame {
                             .addComponent(lbl_descricao)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(21, 21, 21)
-                                .addComponent(btn_finalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(btn_finalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btn_voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
                 .addComponent(img_background)
                 .addGap(0, 0, 0))
@@ -124,13 +134,10 @@ public class Chamados extends javax.swing.JFrame {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(lbl_chamado))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(jLabel1)))
+                .addGap(20, 20, 20)
+                .addComponent(btn_voltar)
+                .addGap(30, 30, 30)
+                .addComponent(lbl_chamado)
                 .addGap(41, 41, 41)
                 .addComponent(lbl_ra)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -165,17 +172,24 @@ public class Chamados extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txt_raActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_raActionPerformed
+    private void btn_finalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_finalizarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txt_raActionPerformed
+    }//GEN-LAST:event_btn_finalizarActionPerformed
 
     private void txt_hostnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_hostnameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_hostnameActionPerformed
 
-    private void btn_finalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_finalizarActionPerformed
+    private void txt_raActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_raActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btn_finalizarActionPerformed
+    }//GEN-LAST:event_txt_raActionPerformed
+
+    private void btn_voltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_voltarActionPerformed
+        // TODO add your handling code here:
+        Logado logado = new Logado();
+        this.dispose();
+        logado.setVisible(true);
+    }//GEN-LAST:event_btn_voltarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -214,8 +228,8 @@ public class Chamados extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_finalizar;
+    private javax.swing.JButton btn_voltar;
     private javax.swing.JLabel img_background;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbl_chamado;

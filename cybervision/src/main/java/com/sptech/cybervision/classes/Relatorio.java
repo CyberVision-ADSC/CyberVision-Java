@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @author leona
  */
 public class Relatorio {
-    private Double usoCpu;
+    private Integer usoCpu;
     private Long usoDisco;
     private Long usoRam;
     private Boolean problemaCpu;
@@ -20,7 +20,7 @@ public class Relatorio {
     private Boolean problemaFisico;
     private String dataHora;
 
-    public Relatorio(Double usoCpu, Long usoDisco, Long usoRam, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaRam, Boolean problemaFisico, String dataHora) {
+    public Relatorio(Integer usoCpu, Long usoDisco, Long usoRam, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaRam, Boolean problemaFisico, String dataHora) {
         this.usoCpu = usoCpu;
         this.usoDisco = usoDisco;
         this.usoRam = usoRam;
@@ -34,11 +34,11 @@ public class Relatorio {
    
     
 
-    public Double getUsoCpu() {
+    public Integer getUsoCpu() {
         return usoCpu;
     }
 
-    public void setUsoCpu(Double usoCpu) {
+    public void setUsoCpu(Integer usoCpu) {
         this.usoCpu = usoCpu;
     }
 

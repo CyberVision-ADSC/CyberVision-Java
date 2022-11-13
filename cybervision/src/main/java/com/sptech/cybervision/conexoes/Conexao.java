@@ -4,8 +4,6 @@
  */
 package com.sptech.cybervision.conexoes;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -18,7 +16,8 @@ public class Conexao {
     private JdbcTemplate connection;
 
     public Conexao() {
-        
+
+        // CONEXÃO MYSQL OU DOCKER
         BasicDataSource dataSource = new BasicDataSource();
 
         dataSource​.setDriverClassName("com.mysql.cj.jdbc.Driver");
@@ -27,7 +26,16 @@ public class Conexao {
 
         dataSource​.setUsername("root");
 
-        dataSource​.setPassword("urubu100");
+        dataSource​.setPassword("nacagawa1333");
+
+        // CONEXÃO SQLSERVER AZURE
+//        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+//
+//        dataSource.setUrl("jdbc:sqlserver://cybervision-server.database.windows.net:1433;database=cybervision");
+//
+//        dataSource.setUsername("admin-cybervision");
+//
+//        dataSource.setPassword("#Gfgrupo4");
 
         this.connection = new JdbcTemplate(dataSource);
 
