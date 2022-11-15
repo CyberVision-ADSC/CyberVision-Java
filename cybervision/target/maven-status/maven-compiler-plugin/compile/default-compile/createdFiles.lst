@@ -5,6 +5,7 @@ com\sptech\cybervision\classes\Sala.class
 com\sptech\cybervision\classes\Usuario.class
 com\sptech\cybervision\view\Chamados.class
 com\sptech\cybervision\view\Logado$1.class
+com\sptech\cybervision\conexoes\Slack.class
 com\sptech\cybervision\view\Login$2.class
 com\sptech\cybervision\view\Chamados$4.class
 com\sptech\cybervision\classes\Processo.class

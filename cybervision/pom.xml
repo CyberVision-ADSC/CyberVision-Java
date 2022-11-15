@@ -76,5 +76,11 @@
             <artifactId>mssql-jdbc</artifactId>
             <version>11.2.1.jre11</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20220924</version>
+        </dependency>
     </dependencies>
 </project>
