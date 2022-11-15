@@ -103,7 +103,7 @@ public class Faculdade {
 
     @Override
     public String toString() {
-        return "Faculdade{" + "nomeFantasia=" + nomeFantasia + ", razaoSocial=" + razaoSocial + ", cnpj=" + cnpj + ", cep=" + cep + ", numero=" + numero + ", usuarios=" + usuarios + ", andares=" + andares + '}';
+        return "\nFaculdade = " + "Nome fantasia: " + nomeFantasia + ", Razão social: " + razaoSocial + ", CNPJ: " + cnpj + ", CEP: " + cep + ", Número: " + numero + ", Usuários: " + usuarios + ", Andares: " + andares;
     }
     
     

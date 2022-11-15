@@ -29,7 +29,6 @@ public class Sala {
 
     public void adicionarComputador(Computador computador){
         computadores.add(computador);
-        
     }
 
     public String getIdentificadorSala() {
@@ -66,7 +65,7 @@ public class Sala {
 
     @Override
     public String toString() {
-        return "Sala{" + "identificadorSala=" + identificadorSala + ", descricao=" + descricao + ", isAtivo=" + isAtivo + ", computadores=" + computadores + '}';
+        return "\nSala = " + "Identificador da sala: " + identificadorSala + ", Descrição: " + descricao + ", Ativo: " + isAtivo + ", Computadores: " + computadores;
     }
 
     

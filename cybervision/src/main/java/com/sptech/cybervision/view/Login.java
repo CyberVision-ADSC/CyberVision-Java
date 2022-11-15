@@ -171,11 +171,12 @@ public class Login extends javax.swing.JFrame {
 
         String emailDigitado = inputEmail.getText();
         String senhaDigitada = new String(inputSenha.getPassword());
-
+        
+        // Validando o email e senha digitada no banco de dados
         try {
             Map<String, Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
 
-            // Instânciando usuário que logou
+            // Pegando informações do usuário que fez o login, seu nome, nivel de acesso e o fkFaculdade.
             List<Map<String, Object>> listaUsuario = conexao.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
             String nomeUsuario = listaUsuario.get(0).get("nome").toString();
             String nivelAcesso = listaUsuario.get(0).get("tipo_usuario").toString();
@@ -183,15 +184,15 @@ public class Login extends javax.swing.JFrame {
             
             //LOG LOGIN SUCESSO
             String nomeUser = nomeUsuario;
-            
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             String dataHora = dtf.format(LocalDateTime.now());
                    
-            criadorLogs cl = new criadorLogs();
-            cl.logLogin("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\Log", nomeUser, " Conectou ás ",dataHora);
+//            criadorLogs cl = new criadorLogs();
+//            cl.logLogin("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\Log", nomeUser, " Conectou ás ",dataHora);
             
             
-            // Instânciando faculdade que o usuário pertence
+            // Pegando informações da faculdade do usuário que logou, nome fantasia, razão social,
+            // cnpj, cep e número
             List<Map<String, Object>> listaFaculdade = conexao.getConnection().queryForList("select * from faculdade where id_faculdade = ?", fkFaculdade);
             String nomeFantasia = listaFaculdade.get(0).get("nome_fantasia").toString();
             String razaoSocial = listaFaculdade.get(0).get("razao_social").toString();
@@ -199,21 +200,17 @@ public class Login extends javax.swing.JFrame {
             String cep = listaFaculdade.get(0).get("cep").toString();
             Integer numero = Integer.parseInt(listaFaculdade.get(0).get("numero").toString());
 
-            // Objeto da faculdade
+            // Instânciando a faculdade
             Faculdade faculdade = new Faculdade(nomeFantasia, razaoSocial, cnpj, cep, numero);
 
-            // Objeto do usuário
+            // Instânciando o usuário
             Usuario usuario = new Usuario(nomeUsuario, emailDigitado, senhaDigitada, nivelAcesso);
 
-            // Adicionando usuário a lista de usuários dentro da faculdade
             faculdade.adicionarUsuario(usuario);
             
-            // Printando faculdade e usuário
             System.out.println(faculdade);
             System.out.println(usuario);
-            
 
-            // Trocando de tela
             this.dispose();
             associar.setVisible(true);
 
@@ -225,8 +222,8 @@ public class Login extends javax.swing.JFrame {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             String dataHora = dtf.format(LocalDateTime.now());
             
-            criadorLogs cl = new criadorLogs();
-            cl.logErro("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\LogErros", " ERRO AO LOGAR: ",dataHora);
+//            criadorLogs cl = new criadorLogs();
+//            cl.logErro("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\LogErros", " ERRO AO LOGAR: ",dataHora);
             
         }
 

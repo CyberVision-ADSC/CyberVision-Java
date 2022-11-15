@@ -14,7 +14,6 @@ import com.sptech.cybervision.conexoes.Conexao;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import logs.criadorLogs;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
@@ -158,45 +157,46 @@ public class AssociarMaquina extends javax.swing.JFrame {
         Usuario usuario = new Usuario();
         String hostName = inputHostName.getText();
 
+        // Checando se o hostname digitado pelo usuário realmente existe no banco
         try {
             Map<String, Object> registroHost = conexao.getConnection().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
 
-            // Pegando fk_sala do computador cujo hostname foi inserido
+            // Pegando informçãoes do computador, se ele está ativo, fkSala e o seu ID.
             List<Map<String, Object>> listaComputador = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostName);
             Boolean isAtivoComputador = Boolean.parseBoolean(listaComputador.get(0).get("is_ativo").toString());
             Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
             Integer fkComputador = Integer.parseInt(listaComputador.get(0).get("id_computador").toString());
 
-            // Instânciando a sala
+            // Pegando informações da sala que o computador está, identificador da sala, 
+            // descrição, fkAndar e se está ativa
             List<Map<String, Object>> listaSala = conexao.getConnection().queryForList("select * from sala where id_sala = ?", fkSala);
             String identificadorSala = listaSala.get(0).get("identificador_sala").toString();
             String descricaoSala = listaSala.get(0).get("descricao_sala").toString();
-            Boolean isAtivoSala = Boolean.parseBoolean(listaSala.get(0).get("is_ativo").toString());
-
-            // Pegando fk_andar 
+            Boolean isAtivoSala = Boolean.parseBoolean(listaSala.get(0).get("is_ativo").toString()); 
             Integer fkAndar = Integer.parseInt(listaSala.get(0).get("fk_andar").toString());
 
-            // Instânciando o andar
+            // Pegando informações do andar que a sala está, indetificador do andar, 
+            // descrição e se está ativo.
             List<Map<String, Object>> listaAndar = conexao.getConnection().queryForList("select * from andar where id_andar = ?", fkAndar);
             String identificadorAndar = listaAndar.get(0).get("identificador_andar").toString();
             String descricaoAndar = listaAndar.get(0).get("descricao_andar").toString();
             Boolean isAtivoAndar = Boolean.parseBoolean(listaAndar.get(0).get("is_ativo").toString());
 
-            // Objeto do andar
+            // Instânciando o andar
             Andar andar = new Andar(identificadorAndar, descricaoAndar, isAtivoAndar);
 
-            // Objeto da sala
+            // Instânciando a sala
             Sala sala = new Sala(identificadorSala, descricaoSala, isAtivoSala);
 
-
             // faculdade.adicionarAndar(andar);
+            
             andar.adicionarSala(sala);
-
 
             System.out.println(andar);
             System.out.println(sala);
 
+            //Chamando função para associar a máquina  cujo hostname foi inserido
             usuario.associarMaquina(hostName, isAtivoComputador, fkComputador, fkSala);
 
             this.dispose();

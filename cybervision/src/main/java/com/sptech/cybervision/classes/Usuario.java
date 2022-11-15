@@ -38,8 +38,9 @@ public class Usuario {
 
     public void associarMaquina(String hostName, Boolean isAtivoComputador, Integer fkComputador, Integer fkSala) {
 
-        Long converteGiga = 1073741824l;
-        Long converteMega = 1048576L;
+        Long converteGiga = 1073741824l; // Conversor de bytes para Giga
+        
+        // Usando o looca para pegar informações da máquina
         String nomeProcessador = looca.getProcessador().getNome();
         Integer arquitetura = looca.getSistema().getArquitetura();
         String fabricante = looca.getSistema().getFabricante();
@@ -47,6 +48,7 @@ public class Usuario {
         Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / converteGiga;
         String sistemaOperacional = looca.getSistema().getSistemaOperacional();
 
+        // Atualizando a máquina no banco com os dados coletados
         conexao.getConnection().update(
                 "UPDATE computador SET processador = ?, arquitetura = ?, "
                 + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
@@ -55,6 +57,7 @@ public class Usuario {
                 nomeProcessador, arquitetura, fabricante, memoriaRam,
                 tamanhoDisco, sistemaOperacional, false, false, false, false, isAtivoComputador, hostName);
 
+        // Instânciando a máquina atualizada
         Computador computador = new Computador(hostName, nomeProcessador,
                 arquitetura, fabricante, memoriaRam, tamanhoDisco,
                 sistemaOperacional, false, false, false, false, isAtivoComputador);
@@ -62,6 +65,7 @@ public class Usuario {
         // sala.adicionarComputador(computador);
         System.out.println(computador.toString());
 
+        // Chamando função para coletar relatórios e processos da máquina
         computador.coletarRelatoriosProcessos(fkComputador, fkSala);
 
     }
