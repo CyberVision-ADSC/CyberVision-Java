@@ -5,7 +5,6 @@
 package com.sptech.cybervision.classes;
 
 import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.util.Conversor;
 import com.sptech.cybervision.conexoes.Conexao;
 import com.sptech.cybervision.view.AssociarMaquina;
 import com.sptech.cybervision.view.Logado;
@@ -26,7 +25,6 @@ public class Usuario {
     Looca looca = new Looca();
     Logado logado = new Logado();
     Sala sala = new Sala();
-   
 
     public Usuario(String nome, String email, String senha, String nivelAcesso) {
         this.nome = nome;
@@ -38,33 +36,33 @@ public class Usuario {
     public Usuario() {
     }
 
-    public void associarMaquina(String hostName, Integer fkComputador, Integer fkSala) {
+    public void associarMaquina(String hostName, Boolean isAtivoComputador, Integer fkComputador, Integer fkSala) {
 
         Long converteGiga = 1073741824l;
         Long converteMega = 1048576L;
         String nomeProcessador = looca.getProcessador().getNome();
         Integer arquitetura = looca.getSistema().getArquitetura();
         String fabricante = looca.getSistema().getFabricante();
-        Long memoriaRam =  looca.getMemoria().getTotal() / converteGiga;
+        Long memoriaRam = looca.getMemoria().getTotal() / converteGiga;
         Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / converteGiga;
         String sistemaOperacional = looca.getSistema().getSistemaOperacional();
 
-            conexao.getConnection().update(
-                    "UPDATE computador SET processador = ?, arquitetura = ?, "
-                    + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
-                    + "ativo = ? WHERE hostname = ?",
-                    nomeProcessador, arquitetura, fabricante, memoriaRam,
-                    tamanhoDisco, sistemaOperacional, true, hostName);
+        conexao.getConnection().update(
+                "UPDATE computador SET processador = ?, arquitetura = ?, "
+                + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
+                + "problema_cpu = ?, problema_disco = ?, problema_memoria = ?, problema_fisico = ?,"
+                + " is_ativo = ? WHERE hostname = ?",
+                nomeProcessador, arquitetura, fabricante, memoriaRam,
+                tamanhoDisco, sistemaOperacional, false, false, false, false, isAtivoComputador, hostName);
 
-            Computador computador = new Computador(hostName, nomeProcessador,
-                    arquitetura, fabricante, memoriaRam, tamanhoDisco,
-                    sistemaOperacional, true);
-            
-           // sala.adicionarComputador(computador);
-            
-            System.out.println(computador.toString());
-            
-            computador.coletarRelatoriosProcessos(fkComputador, fkSala);
+        Computador computador = new Computador(hostName, nomeProcessador,
+                arquitetura, fabricante, memoriaRam, tamanhoDisco,
+                sistemaOperacional, false, false, false, false, isAtivoComputador);
+
+        // sala.adicionarComputador(computador);
+        System.out.println(computador.toString());
+
+        computador.coletarRelatoriosProcessos(fkComputador, fkSala);
 
     }
 

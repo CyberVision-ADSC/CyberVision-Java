@@ -14,11 +14,13 @@ import java.util.List;
 public class Sala {
     private String identificadorSala;
     private String descricao;
+    private Boolean isAtivo;
     private List<Computador> computadores;
 
-    public Sala(String identificadorSala, String descricao) {
+    public Sala(String identificadorSala, String descricao, Boolean isAtivo) {
         this.identificadorSala = identificadorSala;
         this.descricao = descricao;
+        this.isAtivo = isAtivo;
         this.computadores = new ArrayList<>();
     }
 
@@ -46,6 +48,14 @@ public class Sala {
         this.descricao = descricao;
     }
 
+    public Boolean getIsAtivo() {
+        return isAtivo;
+    }
+
+    public void setIsAtivo(Boolean isAtivo) {
+        this.isAtivo = isAtivo;
+    }
+
     public List<Computador> getComputadores() {
         return computadores;
     }
@@ -56,8 +66,10 @@ public class Sala {
 
     @Override
     public String toString() {
-        return "Sala{" + "identificadorSala=" + identificadorSala + ", descricao=" + descricao + ", computadores=" + computadores + '}';
+        return "Sala{" + "identificadorSala=" + identificadorSala + ", descricao=" + descricao + ", isAtivo=" + isAtivo + ", computadores=" + computadores + '}';
     }
+
+    
     
     
     

@@ -14,11 +14,13 @@ import java.util.List;
 public class Andar {
     private String identificadorAndar;
     private String descricao;
+    private Boolean isAtivo;
     private List<Sala> salas;
 
-    public Andar(String identificadorAndar, String descricao) {
+    public Andar(String identificadorAndar, String descricao, Boolean isAtivo) {
         this.identificadorAndar = identificadorAndar;
         this.descricao = descricao;
+        this.isAtivo = isAtivo;
         this.salas = new ArrayList<>();
     }
 
@@ -43,6 +45,14 @@ public class Andar {
         this.descricao = descricao;
     }
 
+    public Boolean getIsAtivo() {
+        return isAtivo;
+    }
+
+    public void setIsAtivo(Boolean isAtivo) {
+        this.isAtivo = isAtivo;
+    }
+
     public List<Sala> getSalas() {
         return salas;
     }
@@ -53,8 +63,10 @@ public class Andar {
 
     @Override
     public String toString() {
-        return "Andar{" + "identificadorAndar=" + identificadorAndar + ", descricao=" + descricao + ", salas=" + salas + '}';
+        return "Andar{" + "identificadorAndar=" + identificadorAndar + ", descricao=" + descricao + ", isAtivo=" + isAtivo + ", salas=" + salas + '}';
     }
+
+   
     
     
     

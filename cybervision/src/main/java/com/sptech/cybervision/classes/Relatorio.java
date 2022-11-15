@@ -4,8 +4,6 @@
  */
 package com.sptech.cybervision.classes;
 
-import java.time.LocalDateTime;
-
 /**
  *
  * @author leona
@@ -14,20 +12,12 @@ public class Relatorio {
     private Integer usoCpu;
     private Long usoDisco;
     private Long usoRam;
-    private Boolean problemaCpu;
-    private Boolean problemaDisco;
-    private Boolean problemaRam;
-    private Boolean problemaFisico;
     private String dataHora;
 
-    public Relatorio(Integer usoCpu, Long usoDisco, Long usoRam, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaRam, Boolean problemaFisico, String dataHora) {
+    public Relatorio(Integer usoCpu, Long usoDisco, Long usoRam, String dataHora) {
         this.usoCpu = usoCpu;
         this.usoDisco = usoDisco;
         this.usoRam = usoRam;
-        this.problemaCpu = problemaCpu;
-        this.problemaDisco = problemaDisco;
-        this.problemaRam = problemaRam;
-        this.problemaFisico = problemaFisico;
         this.dataHora = dataHora;
     }
 
@@ -56,38 +46,6 @@ public class Relatorio {
         this.usoRam = usoRam;
     }
 
-    public Boolean getProblemaCpu() {
-        return problemaCpu;
-    }
-
-    public void setProblemaCpu(Boolean problemaCpu) {
-        this.problemaCpu = problemaCpu;
-    }
-
-    public Boolean getProblemaDisco() {
-        return problemaDisco;
-    }
-
-    public void setProblemaDisco(Boolean problemaDisco) {
-        this.problemaDisco = problemaDisco;
-    }
-
-    public Boolean getProblemaRam() {
-        return problemaRam;
-    }
-
-    public void setProblemaRam(Boolean problemaRam) {
-        this.problemaRam = problemaRam;
-    }
-
-    public Boolean getProblemaFisico() {
-        return problemaFisico;
-    }
-
-    public void setProblemaFisico(Boolean problemaFisico) {
-        this.problemaFisico = problemaFisico;
-    }
-
     public String getDataHora() {
         return dataHora;
     }
@@ -98,7 +56,7 @@ public class Relatorio {
 
     @Override
     public String toString() {
-        return "Relatorio{" + "usoCpu=" + usoCpu + ", usoDisco=" + usoDisco + ", usoRam=" + usoRam + ", problemaCpu=" + problemaCpu + ", problemaDisco=" + problemaDisco + ", problemaRam=" + problemaRam + ", problemaFisico=" + problemaFisico + ", dataHora=" + dataHora + '}';
+        return "Relatorio{" + "usoCpu=" + usoCpu + ", usoDisco=" + usoDisco + ", usoRam=" + usoRam + ", dataHora=" + dataHora + '}';
     }
 
    

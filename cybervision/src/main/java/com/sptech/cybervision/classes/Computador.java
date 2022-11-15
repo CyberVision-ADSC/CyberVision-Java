@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
  *
@@ -30,12 +29,16 @@ public class Computador {
     private Long ram;
     private Long disco;
     private String sistemaOperacional;
-    private Boolean ativo;
+    private Boolean problemaCpu;
+    private Boolean problemaDisco;
+    private Boolean problemaMemoria;
+    private Boolean problemaFisico;
+    private Boolean isAtivo;
     private List<Relatorio> relatorios;
     private List<Processo> processos;
     private Integer contadorRelatorios = 10;
 
-    public Computador(String hostname, String processador, Integer arquitetura, String fabricante, Long ram, Long disco, String sistemaOperacional, Boolean ativo) {
+    public Computador(String hostname, String processador, Integer arquitetura, String fabricante, Long ram, Long disco, String sistemaOperacional, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaMemoria, Boolean problemaFisico, Boolean isAtivo) {
         this.hostname = hostname;
         this.processador = processador;
         this.arquitetura = arquitetura;
@@ -43,10 +46,13 @@ public class Computador {
         this.ram = ram;
         this.disco = disco;
         this.sistemaOperacional = sistemaOperacional;
-        this.ativo = ativo;
+        this.problemaCpu = problemaCpu;
+        this.problemaDisco = problemaDisco;
+        this.problemaMemoria = problemaMemoria;
+        this.problemaFisico = problemaFisico;
+        this.isAtivo = isAtivo;
         this.relatorios = new ArrayList<>();
         this.processos = new ArrayList<>();
-
     }
 
     public Computador() {
@@ -61,8 +67,8 @@ public class Computador {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+
                 Long converteGiga = 1073741824L;
-                Long converteMega = 1048576L;
                 Long totalDisco = 0L;
                 Long totalDiscoDisponivel = 0L;
 
@@ -94,41 +100,45 @@ public class Computador {
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 String dataHora = dtf.format(LocalDateTime.now());
 
-                //IMPLEMENTAR ALERTAS
-                Boolean problemaCpu = false;
-                Boolean problemaDisco = false;
-                Boolean problemaMemoria = false;
+                conexao.getConnection().update(
+                        "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
+                        + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
+                        usoCpu, usoDisco, usoRam, dataHora, fkComputador, fkSala);
+
+                Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, dataHora);
+                relatorios.add(relatorio);
+
+                System.out.println(relatorio);
+
+                Boolean problemaCpuRelatorio = false;
+                Boolean problemaDiscoRelatorio = false;
+                Boolean problemaMemoriaRelatorio = false;
+                Boolean problemaFisicoRelatorio = false;
 
                 if (usoDisco >= 90) {
-                    problemaDisco = true;
+                    problemaDiscoRelatorio = true;
                 }
 
                 if (usoRam >= 90) {
-                    problemaMemoria = true;
+                    problemaMemoriaRelatorio = true;
                 }
 
                 if (usoCpu >= 80) {
                     contadorRelatorios--;
+                    if (contadorRelatorios == 0) {
+                        problemaCpuRelatorio = true;
+                    }
 
                 } else {
                     contadorRelatorios = 10;
                 }
 
-                if (contadorRelatorios == 0) {
-                    problemaCpu = true;
-                }
-
                 conexao.getConnection().update(
-                        "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, problema_cpu,"
-                        + " problema_disco, problema_memoria, problema_fisico, data_hora, fk_computador,"
-                        + " fk_sala) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        usoCpu, usoDisco, usoRam, problemaCpu, problemaDisco, problemaMemoria, false,
-                        dataHora, fkComputador, fkSala);
-
-                Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, true, true, true, false, dataHora);
-                relatorios.add(relatorio);
-
-                System.out.println(relatorio);
+                        "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
+                        + "problema_memoria = ?, problema_fisico = ? "
+                        + "WHERE id_computador = ?", problemaCpuRelatorio,
+                        problemaDiscoRelatorio, problemaMemoriaRelatorio, 
+                        problemaFisicoRelatorio, fkComputador);
 
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
@@ -137,7 +147,7 @@ public class Computador {
                     Double usoMemoriaProcesso = processo.getUsoMemoria();
 
                     List<Map<String, Object>> registroProcesso = conexao.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
-                    
+
                     if (registroProcesso.isEmpty()) {
 
                         conexao.getConnection().update(
@@ -222,12 +232,46 @@ public class Computador {
         this.sistemaOperacional = sistemaOperacional;
     }
 
+    public Boolean getProblemaCpu() {
+        return problemaCpu;
+    }
+
+    public void setProblemaCpu(Boolean problemaCpu) {
+        this.problemaCpu = problemaCpu;
+    }
+
+    public Boolean getProblemaDisco() {
+        return problemaDisco;
+    }
+
+    public void setProblemaDisco(Boolean problemaDisco) {
+        this.problemaDisco = problemaDisco;
+    }
+
+    public Boolean getProblemaMemoria() {
+        return problemaMemoria;
+    }
+
+    public void setProblemaMemoria(Boolean problemaMemoria) {
+        this.problemaMemoria = problemaMemoria;
+    }
+
+    public Boolean getProblemaFisico() {
+        return problemaFisico;
+    }
+
+    public void setProblemaFisico(Boolean problemaFisico) {
+        this.problemaFisico = problemaFisico;
+    }
+    
+    
+
     public Boolean getAtivo() {
-        return ativo;
+        return isAtivo;
     }
 
     public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
+        this.isAtivo = ativo;
     }
 
     public List<Relatorio> getRelatorios() {
@@ -264,7 +308,7 @@ public class Computador {
                 + "\nMemória Ram: " + ram
                 + "\nDisco: " + disco
                 + "\nSistema operacional: " + sistemaOperacional
-                + "\nAtivo: " + ativo
+                + "\nAtivo: " + isAtivo
                 + "\nRelatórios: " + relatorios
                 + "\nProcessos: " + processos;
 

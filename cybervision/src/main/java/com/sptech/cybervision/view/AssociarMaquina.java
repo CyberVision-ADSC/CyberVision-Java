@@ -163,6 +163,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
             // Pegando fk_sala do computador cujo hostname foi inserido
             List<Map<String, Object>> listaComputador = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostName);
+            Boolean isAtivoComputador = Boolean.parseBoolean(listaComputador.get(0).get("is_ativo").toString());
             Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
             Integer fkComputador = Integer.parseInt(listaComputador.get(0).get("id_computador").toString());
 
@@ -170,6 +171,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
             List<Map<String, Object>> listaSala = conexao.getConnection().queryForList("select * from sala where id_sala = ?", fkSala);
             String identificadorSala = listaSala.get(0).get("identificador_sala").toString();
             String descricaoSala = listaSala.get(0).get("descricao_sala").toString();
+            Boolean isAtivoSala = Boolean.parseBoolean(listaSala.get(0).get("is_ativo").toString());
 
             // Pegando fk_andar 
             Integer fkAndar = Integer.parseInt(listaSala.get(0).get("fk_andar").toString());
@@ -178,12 +180,13 @@ public class AssociarMaquina extends javax.swing.JFrame {
             List<Map<String, Object>> listaAndar = conexao.getConnection().queryForList("select * from andar where id_andar = ?", fkAndar);
             String identificadorAndar = listaAndar.get(0).get("identificador_andar").toString();
             String descricaoAndar = listaAndar.get(0).get("descricao_andar").toString();
+            Boolean isAtivoAndar = Boolean.parseBoolean(listaAndar.get(0).get("is_ativo").toString());
 
             // Objeto do andar
-            Andar andar = new Andar(identificadorAndar, descricaoAndar);
+            Andar andar = new Andar(identificadorAndar, descricaoAndar, isAtivoAndar);
 
             // Objeto da sala
-            Sala sala = new Sala(identificadorSala, descricaoSala);
+            Sala sala = new Sala(identificadorSala, descricaoSala, isAtivoSala);
 
 
             // faculdade.adicionarAndar(andar);
@@ -193,7 +196,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
             System.out.println(andar);
             System.out.println(sala);
 
-            usuario.associarMaquina(hostName, fkComputador, fkSala);
+            usuario.associarMaquina(hostName, isAtivoComputador, fkComputador, fkSala);
 
             this.dispose();
             logado.setVisible(true);
