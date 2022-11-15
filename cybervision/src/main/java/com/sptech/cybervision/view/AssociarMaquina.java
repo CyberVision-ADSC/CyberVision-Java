@@ -14,6 +14,7 @@ import com.sptech.cybervision.conexoes.Conexao;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import logs.criadorLogs;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**

@@ -25,3 +25,4 @@ com\sptech\cybervision\view\Chamados$5.class
 com\sptech\cybervision\view\AssociarMaquina$2.class
 com\sptech\cybervision\view\Logado.class
 com\sptech\cybervision\view\Login.class
+logs\criadorLogs.class

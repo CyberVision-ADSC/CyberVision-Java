@@ -7,9 +7,12 @@ package com.sptech.cybervision.view;
 import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import logs.criadorLogs;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
@@ -177,7 +180,17 @@ public class Login extends javax.swing.JFrame {
             String nomeUsuario = listaUsuario.get(0).get("nome").toString();
             String nivelAcesso = listaUsuario.get(0).get("tipo_usuario").toString();
             Integer fkFaculdade = Integer.parseInt(listaUsuario.get(0).get("fk_faculdade").toString());
-
+            
+            //LOG LOGIN SUCESSO
+            String nomeUser = nomeUsuario;
+            
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            String dataHora = dtf.format(LocalDateTime.now());
+                   
+            criadorLogs cl = new criadorLogs();
+            cl.logLogin("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\Log", nomeUser, " Conectou ás ",dataHora);
+            
+            
             // Instânciando faculdade que o usuário pertence
             List<Map<String, Object>> listaFaculdade = conexao.getConnection().queryForList("select * from faculdade where id_faculdade = ?", fkFaculdade);
             String nomeFantasia = listaFaculdade.get(0).get("nome_fantasia").toString();
@@ -207,6 +220,14 @@ public class Login extends javax.swing.JFrame {
         } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
             e.printStackTrace();
+            
+            // LOG ERRO LOGIN
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            String dataHora = dtf.format(LocalDateTime.now());
+            
+            criadorLogs cl = new criadorLogs();
+            cl.logErro("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\LogErros", " ERRO AO LOGAR: ",dataHora);
+            
         }
 
     }//GEN-LAST:event_btn_entrarActionPerformed
