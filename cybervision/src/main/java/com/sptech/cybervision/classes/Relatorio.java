@@ -56,7 +56,7 @@ public class Relatorio {
 
     @Override
     public String toString() {
-        return "\nRelatório = " + "Uso cpu: " + usoCpu + ", Uso disco: " + usoDisco + ", Uso ram: " + usoRam + ", DataHora: " + dataHora;
+        return "\nRelatorio = " + "Uso cpu: " + usoCpu + ", Uso disco: " + usoDisco + ", Uso ram: " + usoRam + ", DataHora: " + dataHora;
     }
 
    

@@ -64,7 +64,7 @@ public class Andar {
     @Override
     public String toString() {
         return "Andar = Identificador do Andar: " + identificadorAndar + 
-                ", Descrição: " + descricao + ", Ativo: " + isAtivo + ", Salas: " + salas;
+                ", Descricao: " + descricao + ", Ativo: " + isAtivo + ", Salas: " + salas;
                 
                 
                 

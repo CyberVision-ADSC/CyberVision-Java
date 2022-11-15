@@ -104,7 +104,7 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Usuario{" + "nome=" + nome + ", email=" + email + ", senha=" + senha + ", nivelAcesso=" + nivelAcesso + '}';
+        return "\nUsuario = " + "Nome:" + nome + ", Email: " + email + ", Senha: " + senha + ", Nivel de acesso" + nivelAcesso;
     }
 
 }

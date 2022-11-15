@@ -135,7 +135,7 @@ public class Computador {
                 if (usoCpu >= 80) {
                     contadorRelatorios--;
                     
-                    if (contadorRelatorios == 0) {
+                    if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
                     }
                     
@@ -176,13 +176,11 @@ public class Computador {
                         processos.add(process);
                         System.out.println(process);
 
-                        
                     } else {
                         // Se o processo existir na tabela ele é apenas atualizado com dados atuais
                         conexao.getConnection().update(
                                 "UPDATE processo SET uso_cpu = ?, uso_memoria = ? WHERE pid = ?",
                                 usoCpuProcesso, usoMemoriaProcesso, pidProcesso);
-
                     }
                 }
             }
@@ -319,11 +317,11 @@ public class Computador {
                 + "\nProcessador: " + processador
                 + "\nArquitetura: " + arquitetura
                 + "\nFabricante: " + fabricante
-                + "\nMemória Ram: " + ram
+                + "\nMemoria Ram: " + ram
                 + "\nDisco: " + disco
                 + "\nSistema operacional: " + sistemaOperacional
                 + "\nAtivo: " + isAtivo
-                + "\nRelatórios: " + relatorios
+                + "\nRelatorios: " + relatorios
                 + "\nProcessos: " + processos;
 
     }

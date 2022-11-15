@@ -65,7 +65,7 @@ public class Sala {
 
     @Override
     public String toString() {
-        return "\nSala = " + "Identificador da sala: " + identificadorSala + ", Descrição: " + descricao + ", Ativo: " + isAtivo + ", Computadores: " + computadores;
+        return "\nSala = " + "Identificador da sala: " + identificadorSala + ", Descricao: " + descricao + ", Ativo: " + isAtivo + ", Computadores: " + computadores;
     }
 
     

@@ -55,7 +55,7 @@ public class Processo {
 
     @Override
     public String toString() {
-        return "Processo = " + "PID: " + pid + ", Nome do Processo: " + nomeProcesso + ", Uso cpu: " + usoCpu + ", Uso memória: " + usoMemoria;
+        return "Processo = " + "PID: " + pid + ", Nome do Processo: " + nomeProcesso + ", Uso cpu: " + usoCpu + ", Uso memoria: " + usoMemoria;
     }
     
     
