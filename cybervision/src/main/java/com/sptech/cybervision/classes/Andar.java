@@ -63,7 +63,11 @@ public class Andar {
 
     @Override
     public String toString() {
-        return "Andar{" + "identificadorAndar=" + identificadorAndar + ", descricao=" + descricao + ", isAtivo=" + isAtivo + ", salas=" + salas + '}';
+        return "Andar = Identificador do Andar: " + identificadorAndar + 
+                ", Descricao: " + descricao + ", Ativo: " + isAtivo + ", Salas: " + salas;
+                
+                
+                
     }
 
    

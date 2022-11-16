@@ -36,7 +36,7 @@ public class Computador {
     private Boolean isAtivo;
     private List<Relatorio> relatorios;
     private List<Processo> processos;
-    private Integer contadorRelatorios = 10;
+    
 
     public Computador(String hostname, String processador, Integer arquitetura, String fabricante, Long ram, Long disco, String sistemaOperacional, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaMemoria, Boolean problemaFisico, Boolean isAtivo) {
         this.hostname = hostname;
@@ -61,14 +61,18 @@ public class Computador {
     Conexao conexao = new Conexao();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
-
+    
+    //Quantidade de relatórios mínimos para gerar alerta na CPU
+    private Integer contadorRelatorios = 10; 
+    
     public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala) {
-
+        
+        //Temporizador que é executado a cada 5 segundos coletando relatórios e processos
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
-                Long converteGiga = 1073741824L;
+                Long converteGiga = 1073741824L; // Converte para Giga os valores em bytes
+                
                 Long totalDisco = 0L;
                 Long totalDiscoDisponivel = 0L;
 
@@ -80,74 +84,84 @@ public class Computador {
                     totalDiscoDisponivel += volume.getDisponivel();
                 }
 
+                // Regra de três e conversões para passar os valores de consumo para porcentagem
                 Long totalDiscoGiga = totalDisco / converteGiga;
-
                 Long totalDiscoDisponivelGiga = totalDiscoDisponivel / converteGiga;
-
                 Long multiplicacaoDiscoDisponivelX100 = totalDiscoDisponivelGiga * 100;
-
                 Long divisaoMultiporDiscoGiga = multiplicacaoDiscoDisponivelX100 / totalDiscoGiga;
-
                 Long totalRam = looca.getMemoria().getTotal() / 1048576L;
-
                 Long usoRamTotal = looca.getMemoria().getEmUso() / 1048576L;
-
                 Long multiplicacaoUsoXCem = usoRamTotal * 100;
 
+                // Uso de cada componente do hardware convertido em porcentagem.
                 Integer usoCpu = looca.getProcessador().getUso().intValue();
                 Long usoDisco = 100 - divisaoMultiporDiscoGiga;
                 Long usoRam = multiplicacaoUsoXCem / totalRam;
+                
+                // Pegando data e hora do momento que o relatório é gerado
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 String dataHora = dtf.format(LocalDateTime.now());
 
+                // Inserindo relatórios na tabela
                 conexao.getConnection().update(
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
                         + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
                         usoCpu, usoDisco, usoRam, dataHora, fkComputador, fkSala);
 
+                // Instânciando cada relatório gerado
                 Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, dataHora);
                 relatorios.add(relatorio);
 
                 System.out.println(relatorio);
-
+                
+                // Variáveis que indicam que se o componente está com problema ou não sendo criadas
                 Boolean problemaCpuRelatorio = false;
                 Boolean problemaDiscoRelatorio = false;
                 Boolean problemaMemoriaRelatorio = false;
                 Boolean problemaFisicoRelatorio = false;
 
+                // Se o DISCO estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoDisco >= 90) {
                     problemaDiscoRelatorio = true;
                 }
 
+                // Se a RAM estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoRam >= 90) {
                     problemaMemoriaRelatorio = true;
                 }
 
+                // Se a CPU estiver com mais de 80% sendo usado em 10 relatórios seguidos 
+                // é gerado o alerta
                 if (usoCpu >= 80) {
                     contadorRelatorios--;
-                    if (contadorRelatorios == 0) {
+                    
+                    if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
                     }
-
+                    
                 } else {
                     contadorRelatorios = 10;
                 }
 
+                // Alertas na tabela do computador sendo atualizados 
                 conexao.getConnection().update(
                         "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
                         + "problema_memoria = ?, problema_fisico = ? "
                         + "WHERE id_computador = ?", problemaCpuRelatorio,
                         problemaDiscoRelatorio, problemaMemoriaRelatorio, 
                         problemaFisicoRelatorio, fkComputador);
-
+                
+                // Pegando todos os processos que estão ocorrendo na máquina
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
                     String nomeProcesso = processo.getNome();
                     Double usoCpuProcesso = processo.getUsoCpu();
                     Double usoMemoriaProcesso = processo.getUsoMemoria();
 
+                    // Validando se o processo existe ou não na tabela pelo pid e fk do computador
                     List<Map<String, Object>> registroProcesso = conexao.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
 
+                    // Se o processo não existir, ele é inserido.
                     if (registroProcesso.isEmpty()) {
 
                         conexao.getConnection().update(
@@ -155,22 +169,20 @@ public class Computador {
                                 + " VALUES (?, ?, ?, ?, ?)",
                                 pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, fkComputador);
 
+                        // Instânciando processo inserido
                         Processo process = new Processo(pidProcesso, nomeProcesso,
                                 usoCpuProcesso, usoMemoriaProcesso);
 
                         processos.add(process);
-
                         System.out.println(process);
 
                     } else {
+                        // Se o processo existir na tabela ele é apenas atualizado com dados atuais
                         conexao.getConnection().update(
                                 "UPDATE processo SET uso_cpu = ?, uso_memoria = ? WHERE pid = ?",
                                 usoCpuProcesso, usoMemoriaProcesso, pidProcesso);
-
                     }
-
                 }
-
             }
         }, 0, 5000);
 
@@ -305,11 +317,11 @@ public class Computador {
                 + "\nProcessador: " + processador
                 + "\nArquitetura: " + arquitetura
                 + "\nFabricante: " + fabricante
-                + "\nMemória Ram: " + ram
+                + "\nMemoria Ram: " + ram
                 + "\nDisco: " + disco
                 + "\nSistema operacional: " + sistemaOperacional
                 + "\nAtivo: " + isAtivo
-                + "\nRelatórios: " + relatorios
+                + "\nRelatorios: " + relatorios
                 + "\nProcessos: " + processos;
 
     }
