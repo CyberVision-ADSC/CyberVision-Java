@@ -26,7 +26,7 @@ public class Conexao {
 
         dataSource​.setUsername("root");
 
-        dataSource​.setPassword("1234");
+        dataSource​.setPassword("senha_MySQL");
 
         // CONEXÃO SQLSERVER AZURE
 //        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
