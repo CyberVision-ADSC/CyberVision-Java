@@ -37,6 +37,25 @@ public class criadorLogs {
         }
     }
     
+    public  void logConexao(String caminhoDiretorio,String quebraLinha,String usuario,String texto,String dataHora){
+        
+        try(
+                
+                FileWriter criadorDeArquvios = new FileWriter(caminhoDiretorio,true);
+                BufferedWriter buffer = new BufferedWriter(criadorDeArquvios);
+                PrintWriter escritorDeArquivos = new PrintWriter(buffer);
+                
+                ){
+                    escritorDeArquivos.append(quebraLinha);
+                    escritorDeArquivos.append(usuario);
+                    escritorDeArquivos.append(texto);
+                    escritorDeArquivos.append(dataHora);
+        }catch(IOException e){
+            e.printStackTrace();
+            
+        }
+    }
+    
     public  void logErro(String caminhoDiretorio,String texto,String dataHora){
         
         try(

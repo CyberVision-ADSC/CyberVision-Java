@@ -66,7 +66,7 @@ public class Usuario {
         System.out.println(computador.toString());
 
         // Chamando função para coletar relatórios e processos da máquina
-        computador.coletarRelatoriosProcessos(fkComputador, fkSala);
+        computador.coletarRelatoriosProcessos(fkComputador, fkSala, hostName);
 
     }
 

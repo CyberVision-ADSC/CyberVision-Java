@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import logs.criadorLogs;
 
 /**
  *
@@ -36,7 +37,6 @@ public class Computador {
     private Boolean isAtivo;
     private List<Relatorio> relatorios;
     private List<Processo> processos;
-    
 
     public Computador(String hostname, String processador, Integer arquitetura, String fabricante, Long ram, Long disco, String sistemaOperacional, Boolean problemaCpu, Boolean problemaDisco, Boolean problemaMemoria, Boolean problemaFisico, Boolean isAtivo) {
         this.hostname = hostname;
@@ -61,18 +61,21 @@ public class Computador {
     Conexao conexao = new Conexao();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
-    
+    criadorLogs cl = new criadorLogs();
+
     //Quantidade de relatórios mínimos para gerar alerta na CPU
-    private Integer contadorRelatorios = 10; 
-    
-    public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala) {
-        
+    private Integer contadorRelatorios = 10;
+   
+  
+
+    public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala, String hostName) {
+
         //Temporizador que é executado a cada 5 segundos coletando relatórios e processos
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Long converteGiga = 1073741824L; // Converte para Giga os valores em bytes
-                
+
                 Long totalDisco = 0L;
                 Long totalDiscoDisponivel = 0L;
 
@@ -97,7 +100,7 @@ public class Computador {
                 Integer usoCpu = looca.getProcessador().getUso().intValue();
                 Long usoDisco = 100 - divisaoMultiporDiscoGiga;
                 Long usoRam = multiplicacaoUsoXCem / totalRam;
-                
+
                 // Pegando data e hora do momento que o relatório é gerado
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 String dataHora = dtf.format(LocalDateTime.now());
@@ -113,7 +116,7 @@ public class Computador {
                 relatorios.add(relatorio);
 
                 System.out.println(relatorio);
-                
+
                 // Variáveis que indicam que se o componente está com problema ou não sendo criadas
                 Boolean problemaCpuRelatorio = false;
                 Boolean problemaDiscoRelatorio = false;
@@ -134,11 +137,11 @@ public class Computador {
                 // é gerado o alerta
                 if (usoCpu >= 80) {
                     contadorRelatorios--;
-                    
+
                     if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
                     }
-                    
+
                 } else {
                     contadorRelatorios = 10;
                 }
@@ -148,9 +151,9 @@ public class Computador {
                         "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
                         + "problema_memoria = ?, problema_fisico = ? "
                         + "WHERE id_computador = ?", problemaCpuRelatorio,
-                        problemaDiscoRelatorio, problemaMemoriaRelatorio, 
+                        problemaDiscoRelatorio, problemaMemoriaRelatorio,
                         problemaFisicoRelatorio, fkComputador);
-                
+
                 // Pegando todos os processos que estão ocorrendo na máquina
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
@@ -183,6 +186,13 @@ public class Computador {
                                 usoCpuProcesso, usoMemoriaProcesso, pidProcesso);
                     }
                 }
+                DateTimeFormatter dtlog = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                String dataHoraLog = dtlog.format(LocalDateTime.now());
+                
+                  DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                  String dataHoraTexto = dtft.format(LocalDateTime.now());
+
+                cl.logConexao(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
             }
         }, 0, 5000);
 
@@ -275,8 +285,6 @@ public class Computador {
     public void setProblemaFisico(Boolean problemaFisico) {
         this.problemaFisico = problemaFisico;
     }
-    
-    
 
     public Boolean getAtivo() {
         return isAtivo;

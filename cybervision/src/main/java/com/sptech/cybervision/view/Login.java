@@ -172,6 +172,12 @@ public class Login extends javax.swing.JFrame {
         String emailDigitado = inputEmail.getText();
         String senhaDigitada = new String(inputSenha.getPassword());
         
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+            String dataHora = dtf.format(LocalDateTime.now());
+            
+            DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            String dataHoraTexto = dtft.format(LocalDateTime.now());
+                  
         // Validando o email e senha digitada no banco de dados
         try {
             Map<String, Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
@@ -184,11 +190,9 @@ public class Login extends javax.swing.JFrame {
             
             //LOG LOGIN SUCESSO
             String nomeUser = nomeUsuario;
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            String dataHora = dtf.format(LocalDateTime.now());
-                   
+ 
             criadorLogs cl = new criadorLogs();
-            cl.logConexao("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\Log-Conexão", nomeUser, " Logou na aplicação ás ",dataHora);
+            cl.logConexao(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexão-Login",dataHora), nomeUser, " Logou na aplicação ás ",dataHoraTexto);
             
             
             // Pegando informações da faculdade do usuário que logou, nome fantasia, razão social,
@@ -219,11 +223,9 @@ public class Login extends javax.swing.JFrame {
             e.printStackTrace();
             
             // LOG ERRO LOGIN
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            String dataHora = dtf.format(LocalDateTime.now());
-            
+           
             criadorLogs cl = new criadorLogs();
-            cl.logErro("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\LogErros", " ERRO AO LOGAR: ",dataHora);
+            cl.logErro(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-Erro-Login",dataHora), " Erro ao logar ás ",dataHoraTexto);
             
         }
 
