@@ -65,8 +65,6 @@ public class Computador {
 
     //Quantidade de relatórios mínimos para gerar alerta na CPU
     private Integer contadorRelatorios = 10;
-   
-  
 
     public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala, String hostName) {
 
@@ -102,7 +100,7 @@ public class Computador {
                 Long usoRam = multiplicacaoUsoXCem / totalRam;
 
                 // Pegando data e hora do momento que o relatório é gerado
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                 String dataHora = dtf.format(LocalDateTime.now());
 
                 // Inserindo relatórios na tabela
@@ -122,15 +120,22 @@ public class Computador {
                 Boolean problemaDiscoRelatorio = false;
                 Boolean problemaMemoriaRelatorio = false;
                 Boolean problemaFisicoRelatorio = false;
+                criadorLogs cl = new criadorLogs();
+
+                DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                String dataHoraText = dtft.format(LocalDateTime.now());
 
                 // Se o DISCO estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoDisco >= 90) {
                     problemaDiscoRelatorio = true;
+                    cl.logAlerta(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ", usoDisco.toString(), "% ás", dataHoraText);
+
                 }
 
                 // Se a RAM estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoRam >= 90) {
                     problemaMemoriaRelatorio = true;
+                    cl.logAlerta(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ", usoRam.toString(), "% ás", dataHoraText);
                 }
 
                 // Se a CPU estiver com mais de 80% sendo usado em 10 relatórios seguidos 
@@ -140,6 +145,7 @@ public class Computador {
 
                     if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
+                        cl.logAlerta(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ", usoCpu.toString(), "% ás", dataHoraText);
                     }
 
                 } else {
@@ -188,9 +194,9 @@ public class Computador {
                 }
                 DateTimeFormatter dtlog = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 String dataHoraLog = dtlog.format(LocalDateTime.now());
-                
-                  DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-                  String dataHoraTexto = dtft.format(LocalDateTime.now());
+
+                DateTimeFormatter dtfp = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                String dataHoraTexto = dtfp.format(LocalDateTime.now());
 
                 cl.logConexao(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
             }

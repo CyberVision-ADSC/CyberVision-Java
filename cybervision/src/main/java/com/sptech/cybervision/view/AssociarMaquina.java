@@ -219,7 +219,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
         } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Hostname não encontrado!");
             criadorLogs cl = new criadorLogs();
-             cl.logErro(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\erro\\%s-Log-erros-maquina",dataHora), " Erro ao associas ás ",dataHoraTexto);
+             cl.logErro(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-erros-maquina",dataHora), " Erro ao associar ás ",dataHoraTexto);
            
 
         }
