@@ -11,9 +11,12 @@ import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Sala;
 import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import logs.criadorLogs;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
@@ -156,11 +159,17 @@ public class AssociarMaquina extends javax.swing.JFrame {
         // TODO add your handling code here:
         Usuario usuario = new Usuario();
         String hostName = inputHostName.getText();
-
+        
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            String dataHora = dtf.format(LocalDateTime.now());
         // Checando se o hostname digitado pelo usuário realmente existe no banco
         try {
             Map<String, Object> registroHost = conexao.getConnection().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
+            
+            criadorLogs cl = new criadorLogs();
+            cl.logConexao("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\Log-Conexão", hostName, " foi associada ás ",dataHora);
+            
 
             // Pegando informçãoes do computador, se ele está ativo, fkSala e o seu ID.
             List<Map<String, Object>> listaComputador = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostName);
@@ -204,6 +213,9 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
         } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Hostname não encontrado!");
+            criadorLogs cl = new criadorLogs();
+            cl.logErro("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\LogErros", " ERRO AO ASSOCIAR A MÁQUINA: ",dataHora);
+            
 
         }
 

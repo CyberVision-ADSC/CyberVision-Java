@@ -187,8 +187,8 @@ public class Login extends javax.swing.JFrame {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             String dataHora = dtf.format(LocalDateTime.now());
                    
-//            criadorLogs cl = new criadorLogs();
-//            cl.logLogin("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\Log", nomeUser, " Conectou ás ",dataHora);
+            criadorLogs cl = new criadorLogs();
+            cl.logConexao("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\Log-Conexão", nomeUser, " Logou na aplicação ás ",dataHora);
             
             
             // Pegando informações da faculdade do usuário que logou, nome fantasia, razão social,
@@ -222,8 +222,8 @@ public class Login extends javax.swing.JFrame {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             String dataHora = dtf.format(LocalDateTime.now());
             
-//            criadorLogs cl = new criadorLogs();
-//            cl.logErro("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\LogErros", " ERRO AO LOGAR: ",dataHora);
+            criadorLogs cl = new criadorLogs();
+            cl.logErro("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\LogErros", " ERRO AO LOGAR: ",dataHora);
             
         }
 

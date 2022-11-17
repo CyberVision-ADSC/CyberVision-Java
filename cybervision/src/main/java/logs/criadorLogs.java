@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 
 public class criadorLogs {
         
-    public  void logLogin(String caminhoDiretorio,String usuario,String texto,String dataHora){
+    public  void logConexao(String caminhoDiretorio,String usuario,String texto,String dataHora){
         
         try(
                 
