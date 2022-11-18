@@ -8,6 +8,8 @@ import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.sptech.cybervision.conexoes.Conexao;
 import com.sptech.cybervision.view.AssociarMaquina;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -128,14 +130,14 @@ public class Computador {
                 // Se o DISCO estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoDisco >= 90) {
                     problemaDiscoRelatorio = true;
-                    cl.logAlerta(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ", usoDisco.toString(), "% ás", dataHoraText);
+                    cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ", usoDisco.toString(), "% ás ", dataHoraText);
 
                 }
 
                 // Se a RAM estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoRam >= 90) {
                     problemaMemoriaRelatorio = true;
-                    cl.logAlerta(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ", usoRam.toString(), "% ás", dataHoraText);
+                    cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ", usoRam.toString(), "% ás ", dataHoraText);
                 }
 
                 // Se a CPU estiver com mais de 80% sendo usado em 10 relatórios seguidos 
@@ -145,7 +147,7 @@ public class Computador {
 
                     if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
-                        cl.logAlerta(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ", usoCpu.toString(), "% ás", dataHoraText);
+                        cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ", usoCpu.toString(), "% ás", dataHoraText);
                     }
 
                 } else {
@@ -164,32 +166,46 @@ public class Computador {
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
                     String nomeProcesso = processo.getNome();
-                    Double usoCpuProcesso = processo.getUsoCpu();
-                    Double usoMemoriaProcesso = processo.getUsoMemoria();
+
+                    BigDecimal usoCpuBig = BigDecimal.valueOf(processo.getUsoCpu());
+                    BigDecimal usoMemoriaBig = BigDecimal.valueOf(processo.getUsoMemoria());
+
+                    usoCpuBig = usoCpuBig.setScale(2, RoundingMode.HALF_EVEN);
+                    usoMemoriaBig = usoMemoriaBig.setScale(2, RoundingMode.HALF_EVEN);
+
+                    Double usoCpuProcesso = usoCpuBig.doubleValue();
+                    Double usoMemoriaProcesso = usoMemoriaBig.doubleValue();
 
                     // Validando se o processo existe ou não na tabela pelo pid e fk do computador
                     List<Map<String, Object>> registroProcesso = conexao.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
 
-                    // Se o processo não existir, ele é inserido.
-                    if (registroProcesso.isEmpty()) {
+                    if (usoCpuProcesso > 1 || usoMemoriaProcesso > 1) {
+                        if (registroProcesso.isEmpty()) {
+                            
+                            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+                            String dataHoraProcesso = dateFormat.format(LocalDateTime.now());
 
-                        conexao.getConnection().update(
-                                "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, fk_computador)"
-                                + " VALUES (?, ?, ?, ?, ?)",
-                                pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, fkComputador);
+                            conexao.getConnection().update(
+                                    "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
+                                    + " VALUES (?, ?, ?, ?, ?, ?)",
+                                    pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputador);
 
-                        // Instânciando processo inserido
-                        Processo process = new Processo(pidProcesso, nomeProcesso,
-                                usoCpuProcesso, usoMemoriaProcesso);
+                            // Instânciando processo inserido
+                            Processo process = new Processo(pidProcesso, nomeProcesso,
+                                    usoCpuProcesso, usoMemoriaProcesso);
 
-                        processos.add(process);
-                        System.out.println(process);
+                            processos.add(process);
+                            System.out.println(process);
 
-                    } else {
-                        // Se o processo existir na tabela ele é apenas atualizado com dados atuais
-                        conexao.getConnection().update(
-                                "UPDATE processo SET uso_cpu = ?, uso_memoria = ? WHERE pid = ?",
-                                usoCpuProcesso, usoMemoriaProcesso, pidProcesso);
+                        } else {
+                            // Se o processo existir na tabela ele é apenas atualizado com dados atuais
+                            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+                            String dataHoraProcessoAtualizado = dateFormat.format(LocalDateTime.now());
+                            
+                            conexao.getConnection().update(
+                                    "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
+                                    usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
+                        }
                     }
                 }
                 DateTimeFormatter dtlog = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -198,7 +214,7 @@ public class Computador {
                 DateTimeFormatter dtfp = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 String dataHoraTexto = dtfp.format(LocalDateTime.now());
 
-                cl.logConexao(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
+                cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
             }
         }, 0, 5000);
 

@@ -60,9 +60,9 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jScrollPane1" min="-2" pref="235" max="-2" attributes="0"/>
                               <Component id="lbl_hostname" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="txt_hostname" alignment="0" min="-2" pref="235" max="-2" attributes="0"/>
+                              <Component id="inputHostname" alignment="0" min="-2" pref="235" max="-2" attributes="0"/>
                               <Component id="lbl_ra" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="txt_ra" alignment="0" min="-2" pref="235" max="-2" attributes="0"/>
+                              <Component id="inputRa" alignment="0" min="-2" pref="235" max="-2" attributes="0"/>
                               <Component id="lbl_descricao" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
@@ -91,11 +91,11 @@
                   <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
                   <Component id="lbl_ra" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="txt_ra" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="inputRa" min="-2" pref="37" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                   <Component id="lbl_hostname" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="txt_hostname" min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="inputHostname" min="-2" pref="37" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
                   <Component id="lbl_descricao" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
@@ -138,7 +138,7 @@
             <Property name="text" type="java.lang.String" value="RA do aluno: "/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txt_ra">
+        <Component class="javax.swing.JTextField" name="inputRa">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Montserrat" size="15" style="0"/>
@@ -148,7 +148,7 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txt_raActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="inputRaActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lbl_hostname">
@@ -162,14 +162,14 @@
             <Property name="text" type="java.lang.String" value="Hostname da m&#xe1;quina:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txt_hostname">
+        <Component class="javax.swing.JTextField" name="inputHostname">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Montserrat" size="15" style="0"/>
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txt_hostnameActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="inputHostnameActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_finalizar">
@@ -211,7 +211,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JTextPane" name="txt_descricao">
+            <Component class="javax.swing.JTextPane" name="inputDescricao">
             </Component>
           </SubComponents>
         </Container>

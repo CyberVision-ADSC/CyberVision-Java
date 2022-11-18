@@ -173,7 +173,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
                     "select * from computador WHERE hostname = ?", hostName);
             
             criadorLogs cl = new criadorLogs();
-             cl.logConexao(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexao-Maquina",dataHora),hostName ," Foi associada ás ",dataHoraTexto);
+             cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexao-Maquina",dataHora),hostName ," Foi associada ás ",dataHoraTexto);
            
 
             // Pegando informçãoes do computador, se ele está ativo, fkSala e o seu ID.
@@ -219,7 +219,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
         } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Hostname não encontrado!");
             criadorLogs cl = new criadorLogs();
-             cl.logErro(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-erros-maquina",dataHora), " Erro ao associar ás ",dataHoraTexto);
+             cl.logErro(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-erros-maquina",dataHora), " Erro ao associar ás ",dataHoraTexto);
            
 
         }

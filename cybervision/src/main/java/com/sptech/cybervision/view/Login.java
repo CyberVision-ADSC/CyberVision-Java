@@ -192,7 +192,7 @@ public class Login extends javax.swing.JFrame {
             String nomeUser = nomeUsuario;
  
             criadorLogs cl = new criadorLogs();
-            cl.logConexao(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexão-Login",dataHora), nomeUser, " Logou na aplicação ás ",dataHoraTexto);
+            cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexão-Login",dataHora), nomeUser, " Logou na aplicação ás ",dataHoraTexto);
             
             
             // Pegando informações da faculdade do usuário que logou, nome fantasia, razão social,
@@ -225,7 +225,7 @@ public class Login extends javax.swing.JFrame {
             // LOG ERRO LOGIN
            
             criadorLogs cl = new criadorLogs();
-            cl.logErro(String.format("C:\\Users\\Gabriel\\OneDrive\\Ambiente de Trabalho\\Documentos\\CYBERVISION_OFC\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-Erro-Login",dataHora), " Erro ao logar ás ",dataHoraTexto);
+            cl.logErro(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-Erro-Login",dataHora), " Erro ao logar ás ",dataHoraTexto);
             
         }
 
