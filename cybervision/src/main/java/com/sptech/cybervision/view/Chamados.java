@@ -6,7 +6,7 @@ package com.sptech.cybervision.view;
 
 import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.conexoes.Conexao;
-import com.sptech.cybervision.conexoes.Slack;
+import com.sptech.cybervision.classes.Slack;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -213,6 +213,10 @@ public class Chamados extends javax.swing.JFrame {
                     "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
                     + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
                     raAluno, hostNameMaquina, descricaoChamado, status, dataHoraCriacao, fkComputador);
+            
+            conexao.getConnection().update(
+                    "UPDATE computador SET problema_fisico = ? WHERE hostname = ?", 
+                    true, hostNameMaquina);
 
             JOptionPane.showMessageDialog(this, "Chamado enviado com sucesso!");
 

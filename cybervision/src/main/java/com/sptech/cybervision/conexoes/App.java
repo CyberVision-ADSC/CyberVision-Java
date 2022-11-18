@@ -4,6 +4,7 @@
  */
 package com.sptech.cybervision.conexoes;
 
+import com.sptech.cybervision.classes.Slack;
 import java.io.IOException;
 import org.json.JSONObject;
 

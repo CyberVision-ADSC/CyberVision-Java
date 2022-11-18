@@ -7,7 +7,6 @@ package com.sptech.cybervision.classes;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.sptech.cybervision.conexoes.Conexao;
-import com.sptech.cybervision.conexoes.Slack;
 import com.sptech.cybervision.view.AssociarMaquina;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -129,7 +128,6 @@ public class Computador {
                 Boolean problemaCpuRelatorio = false;
                 Boolean problemaDiscoRelatorio = false;
                 Boolean problemaMemoriaRelatorio = false;
-                Boolean problemaFisicoRelatorio = false;
                 criadorLogs cl = new criadorLogs();
 
                 DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -188,10 +186,9 @@ public class Computador {
                 // Alertas na tabela do computador sendo atualizados 
                 conexao.getConnection().update(
                         "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
-                        + "problema_memoria = ?, problema_fisico = ? "
+                        + "problema_memoria = ? "
                         + "WHERE id_computador = ?", problemaCpuRelatorio,
-                        problemaDiscoRelatorio, problemaMemoriaRelatorio,
-                        problemaFisicoRelatorio, fkComputador);
+                        problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputador);
 
                 // Pegando todos os processos que estão ocorrendo na máquina
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
