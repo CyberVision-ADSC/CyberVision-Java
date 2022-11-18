@@ -7,7 +7,9 @@ package com.sptech.cybervision.classes;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.conexoes.Slack;
 import com.sptech.cybervision.view.AssociarMaquina;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -17,7 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import logs.criadorLogs;
+import org.json.JSONObject;
 
 /**
  *
@@ -64,6 +69,9 @@ public class Computador {
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     criadorLogs cl = new criadorLogs();
+    JSONObject json =  new JSONObject();
+        
+        
 
     //Quantidade de relatórios mínimos para gerar alerta na CPU
     private Integer contadorRelatorios = 10;
@@ -131,13 +139,28 @@ public class Computador {
                 if (usoDisco >= 90) {
                     problemaDiscoRelatorio = true;
                     cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ", usoDisco.toString(), "% ás ", dataHoraText);
-
+                    json.put("text", "O DISCO atingiu 90% da capacidade :rotating_light: ");
+                    try {
+                        Slack.enviarMensagem(json);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
                 // Se a RAM estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoRam >= 90) {
                     problemaMemoriaRelatorio = true;
                     cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ", usoRam.toString(), "% ás ", dataHoraText);
+                    json.put("text", "A MEMÓRIA RAM atingiu 90% da capacidade :rotating_light: ");
+                    try {
+                        Slack.enviarMensagem(json);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
                 // Se a CPU estiver com mais de 80% sendo usado em 10 relatórios seguidos 
@@ -148,6 +171,14 @@ public class Computador {
                     if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
                         cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ", usoCpu.toString(), "% ás", dataHoraText);
+                        json.put("text", "A CPU atingiu 90% da capacidade :rotating_light: ");
+                    try {
+                        Slack.enviarMensagem(json);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     }
 
                 } else {

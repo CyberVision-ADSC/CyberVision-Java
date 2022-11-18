@@ -4,19 +4,27 @@
  */
 package com.sptech.cybervision.view;
 
+import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.conexoes.Slack;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.json.JSONObject;
 
 /**
  *
  * @author bruno
  */
 public class Chamados extends javax.swing.JFrame {
+
     Conexao conexao = new Conexao();
+    JSONObject json =  new JSONObject();
 
     /**
      * Creates new form Chamados
@@ -187,28 +195,41 @@ public class Chamados extends javax.swing.JFrame {
         String status = "Pendente";
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         String dataHoraCriacao = dtf.format(LocalDateTime.now());
-        
+
         List<Map<String, Object>> registroMaquina = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostNameMaquina);
-        
-        if(registroMaquina.isEmpty()){
-             JOptionPane.showMessageDialog(this, "Hostname inválido!");
-             inputRa.setText(null);
-             inputHostname.setText(null);
-             inputDescricao.setText(null);
-        
-        }else{
-             Integer fkComputador = Integer.parseInt(registroMaquina.get(0).get("id_computador").toString());
+
+        if (registroMaquina.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Hostname inválido!");
+
+        } else if (raAluno.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Preencha seu RA!");
+
+        } else if (descricaoChamado.isEmpty()) {
+             JOptionPane.showMessageDialog(this, "Coloque uma descrição do ocorrido!");
+
+        } else {
+            Integer fkComputador = Integer.parseInt(registroMaquina.get(0).get("id_computador").toString());
             conexao.getConnection().update(
-                        "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
-                        + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
-                        raAluno, hostNameMaquina, descricaoChamado, status, dataHoraCriacao, fkComputador);
-            
+                    "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
+                    + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
+                    raAluno, hostNameMaquina, descricaoChamado, status, dataHoraCriacao, fkComputador);
+
             JOptionPane.showMessageDialog(this, "Chamado enviado com sucesso!");
-         
+
             inputRa.setText(null);
             inputHostname.setText(null);
             inputDescricao.setText(null);
-        
+            
+             json.put("text", "Um chamado acaba de ser aberto "
+                     + "referente a máquina com o hostname: " + hostNameMaquina + ":rotating_light: ");
+                    try {
+                        Slack.enviarMensagem(json);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
         }
     }//GEN-LAST:event_btn_finalizarActionPerformed
 
