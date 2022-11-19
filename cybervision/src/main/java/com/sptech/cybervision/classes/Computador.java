@@ -6,6 +6,7 @@ package com.sptech.cybervision.classes;
 
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
+import com.jezhumble.javasysmon.JavaSysMon;
 import com.sptech.cybervision.conexoes.Conexao;
 import com.sptech.cybervision.view.AssociarMaquina;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -68,12 +70,11 @@ public class Computador {
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     criadorLogs cl = new criadorLogs();
-    JSONObject json =  new JSONObject();
-        
-        
+    JSONObject json = new JSONObject();
 
     //Quantidade de relatórios mínimos para gerar alerta na CPU
     private Integer contadorRelatorios = 10;
+    private static final JavaSysMon SYS_MON = new JavaSysMon();
 
     public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala, String hostName) {
 
@@ -170,13 +171,13 @@ public class Computador {
                         problemaCpuRelatorio = true;
                         cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ", usoCpu.toString(), "% ás", dataHoraText);
                         json.put("text", "A CPU atingiu 90% da capacidade :rotating_light: ");
-                    try {
-                        Slack.enviarMensagem(json);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                        try {
+                            Slack.enviarMensagem(json);
+                        } catch (IOException ex) {
+                            Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
 
                 } else {
@@ -209,7 +210,7 @@ public class Computador {
 
                     if (usoCpuProcesso > 1 || usoMemoriaProcesso > 1) {
                         if (registroProcesso.isEmpty()) {
-                            
+
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcesso = dateFormat.format(LocalDateTime.now());
 
@@ -229,7 +230,7 @@ public class Computador {
                             // Se o processo existir na tabela ele é apenas atualizado com dados atuais
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcessoAtualizado = dateFormat.format(LocalDateTime.now());
-                            
+
                             conexao.getConnection().update(
                                     "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
                                     usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
@@ -243,8 +244,33 @@ public class Computador {
                 String dataHoraTexto = dtfp.format(LocalDateTime.now());
 
                 cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
+
+                List<Map<String, Object>> registroProcessoMatar = conexao.getConnection().queryForList("select * from processo_matar where is_executado = ? and fk_computador = ?", false, fkComputador);
+                if (registroProcessoMatar != null && !registroProcessoMatar.isEmpty()) {
+                    try {
+
+                        Integer pidMatar = Integer.parseInt(registroProcessoMatar.get(0).get("pid_processo").toString());
+                        // Kill the process
+                        SYS_MON.killProcess(pidMatar);
+                        // Kill the process and its children, or only the children
+                        SYS_MON.killProcessTree(pidMatar, true);
+                        System.out.println("Processo morto!");
+                        DateTimeFormatter dhm = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                        String dataHoraMorte = dhm.format(LocalDateTime.now());
+
+                        conexao.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
+                    }catch(Exception e){
+                    
+                        System.out.println("OCORREU UM ERRO AO FINALIZAR O PROCESSO" + e);
+                    }
+
+                } else {
+                    System.out.println("Nao tem processo para matar!");
+                }
+
             }
-        }, 0, 5000);
+        },
+                0, 5000);
 
     }
 

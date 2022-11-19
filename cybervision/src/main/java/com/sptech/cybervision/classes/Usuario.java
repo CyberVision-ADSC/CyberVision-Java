@@ -69,6 +69,7 @@ public class Usuario {
         computador.coletarRelatoriosProcessos(fkComputador, fkSala, hostName);
 
     }
+    
 
     public String getNome() {
         return nome;
