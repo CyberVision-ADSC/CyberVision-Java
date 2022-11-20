@@ -9,6 +9,11 @@ import com.github.britooo.looca.api.group.discos.Volume;
 import com.jezhumble.javasysmon.JavaSysMon;
 import com.sptech.cybervision.conexoes.Conexao;
 import com.sptech.cybervision.view.AssociarMaquina;
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -71,6 +76,7 @@ public class Computador {
     Looca looca = new Looca();
     criadorLogs cl = new criadorLogs();
     JSONObject json = new JSONObject();
+    SystemTray tray = SystemTray.getSystemTray();
 
     //Quantidade de relatórios mínimos para gerar alerta na CPU
     private Integer contadorRelatorios = 10;
@@ -259,8 +265,8 @@ public class Computador {
                         String dataHoraMorte = dhm.format(LocalDateTime.now());
 
                         conexao.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
-                    }catch(Exception e){
-                    
+                    } catch (Exception e) {
+
                         System.out.println("OCORREU UM ERRO AO FINALIZAR O PROCESSO" + e);
                     }
 
@@ -268,6 +274,29 @@ public class Computador {
                     System.out.println("Nao tem processo para matar!");
                 }
 
+                List<Map<String, Object>> registroNotificar = conexao.getConnection().queryForList("select * from notificar_aluno where is_executado = ? and fk_computador = ?", false, fkComputador);
+                if (registroNotificar != null && !registroNotificar.isEmpty()) {
+
+                    SystemTray tray = SystemTray.getSystemTray();
+                    Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
+                    TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
+                    trayIcon.setImageAutoSize(true);
+                    trayIcon.setToolTip("System tray icon demo");
+                    try {
+                        tray.add(trayIcon);
+                    } catch (AWTException ex) {
+                        Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    DateTimeFormatter dhn = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                    String dataHoraNotificacao = dhn.format(LocalDateTime.now());
+
+                    trayIcon.displayMessage("ATENÇÂO", "Detectamos muitos processos"
+                            + " sendo executados ao mesmo tempo nessa máquina,"
+                            + " verifique se está utilizando todos os aplicativos abertos!", TrayIcon.MessageType.WARNING);
+                    
+                    conexao.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
+                }
             }
         },
                 0, 5000);
