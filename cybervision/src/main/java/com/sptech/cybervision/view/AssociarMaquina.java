@@ -11,6 +11,7 @@ import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Sala;
 import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.conexoes.ConexaoDocker;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -27,6 +28,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
     Looca looca = new Looca();
     Conexao conexao = new Conexao();
+    ConexaoDocker conexaoDocker = new ConexaoDocker();
     Logado logado = new Logado();
     Faculdade faculdade = new Faculdade();
    
@@ -160,7 +162,6 @@ public class AssociarMaquina extends javax.swing.JFrame {
         Usuario usuario = new Usuario();
         String hostName = inputHostName.getText();
         
-        
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
             String dataHora = dtf.format(LocalDateTime.now());
             
@@ -169,7 +170,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
                   
         // Checando se o hostname digitado pelo usuário realmente existe no banco
         try {
-            Map<String, Object> registroHost = conexao.getConnection().queryForMap(
+            Map<String, Object> registroHost = conexaoDocker.getConexaoDocker().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
             
             criadorLogs cl = new criadorLogs();
@@ -177,39 +178,12 @@ public class AssociarMaquina extends javax.swing.JFrame {
            
 
             // Pegando informçãoes do computador, se ele está ativo, fkSala e o seu ID.
-            List<Map<String, Object>> listaComputador = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostName);
+            List<Map<String, Object>> listaComputador = conexaoDocker.getConexaoDocker().queryForList("select * from computador where hostname = ?", hostName);
             Boolean isAtivoComputador = Boolean.parseBoolean(listaComputador.get(0).get("is_ativo").toString());
             Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
             Integer fkComputador = Integer.parseInt(listaComputador.get(0).get("id_computador").toString());
 
-            // Pegando informações da sala que o computador está, identificador da sala, 
-            // descrição, fkAndar e se está ativa
-            List<Map<String, Object>> listaSala = conexao.getConnection().queryForList("select * from sala where id_sala = ?", fkSala);
-            String identificadorSala = listaSala.get(0).get("identificador_sala").toString();
-            String descricaoSala = listaSala.get(0).get("descricao_sala").toString();
-            Boolean isAtivoSala = Boolean.parseBoolean(listaSala.get(0).get("is_ativo").toString()); 
-            Integer fkAndar = Integer.parseInt(listaSala.get(0).get("fk_andar").toString());
-
-            // Pegando informações do andar que a sala está, indetificador do andar, 
-            // descrição e se está ativo.
-            List<Map<String, Object>> listaAndar = conexao.getConnection().queryForList("select * from andar where id_andar = ?", fkAndar);
-            String identificadorAndar = listaAndar.get(0).get("identificador_andar").toString();
-            String descricaoAndar = listaAndar.get(0).get("descricao_andar").toString();
-            Boolean isAtivoAndar = Boolean.parseBoolean(listaAndar.get(0).get("is_ativo").toString());
-
-            // Instânciando o andar
-            Andar andar = new Andar(identificadorAndar, descricaoAndar, isAtivoAndar);
-
-            // Instânciando a sala
-            Sala sala = new Sala(identificadorSala, descricaoSala, isAtivoSala);
-
-            // faculdade.adicionarAndar(andar);
             
-            andar.adicionarSala(sala);
-
-            System.out.println(andar);
-            System.out.println(sala);
-
             //Chamando função para associar a máquina  cujo hostname foi inserido
             usuario.associarMaquina(hostName, isAtivoComputador, fkComputador, fkSala);
 

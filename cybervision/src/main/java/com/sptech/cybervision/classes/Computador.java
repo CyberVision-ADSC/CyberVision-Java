@@ -8,6 +8,7 @@ import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.jezhumble.javasysmon.JavaSysMon;
 import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.conexoes.ConexaoDocker;
 import com.sptech.cybervision.view.AssociarMaquina;
 import java.awt.AWTException;
 import java.awt.Image;
@@ -20,7 +21,6 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -72,6 +72,7 @@ public class Computador {
     }
 
     Conexao conexao = new Conexao();
+    ConexaoDocker conexaoDocker = new ConexaoDocker();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     criadorLogs cl = new criadorLogs();
@@ -120,15 +121,18 @@ public class Computador {
                 String dataHora = dtf.format(LocalDateTime.now());
 
                 // Inserindo relatórios na tabela
-                conexao.getConnection().update(
+//                conexao.getConnection().update(
+//                        "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
+//                        + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
+//                        usoCpu, usoDisco, usoRam, dataHora, fkComputador, fkSala);
+
+                conexaoDocker.getConexaoDocker().update(
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
                         + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
                         usoCpu, usoDisco, usoRam, dataHora, fkComputador, fkSala);
 
                 // Instânciando cada relatório gerado
                 Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, dataHora);
-                relatorios.add(relatorio);
-
                 System.out.println(relatorio);
 
                 // Variáveis que indicam que se o componente está com problema ou não sendo criadas
@@ -141,10 +145,13 @@ public class Computador {
                 String dataHoraText = dtft.format(LocalDateTime.now());
 
                 // Se o DISCO estiver com mais de 90% sendo usado é gerado o alerta
-                if (usoDisco >= 90) {
+                if (usoDisco >= 2) {
+                    
                     problemaDiscoRelatorio = true;
                     cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ", usoDisco.toString(), "% ás ", dataHoraText);
-                    json.put("text", "O DISCO atingiu 90% da capacidade :rotating_light: ");
+                   json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
+                           + " O DISCO da máquina com o hostname " + hostName + " está utilizando " + usoDisco + "% da capacidade!");
+                   
                     try {
                         Slack.enviarMensagem(json);
                     } catch (IOException ex) {
@@ -155,10 +162,11 @@ public class Computador {
                 }
 
                 // Se a RAM estiver com mais de 90% sendo usado é gerado o alerta
-                if (usoRam >= 90) {
+                if (usoRam >= 40) {
                     problemaMemoriaRelatorio = true;
                     cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ", usoRam.toString(), "% ás ", dataHoraText);
-                    json.put("text", "A MEMÓRIA RAM atingiu 90% da capacidade :rotating_light: ");
+                    json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
+                           + " A MEMÓRIA RAM da máquina com o hostname " + hostName + " está utilizando " + usoRam + "% da capacidade!");
                     try {
                         Slack.enviarMensagem(json);
                     } catch (IOException ex) {
@@ -170,13 +178,14 @@ public class Computador {
 
                 // Se a CPU estiver com mais de 80% sendo usado em 10 relatórios seguidos 
                 // é gerado o alerta
-                if (usoCpu >= 80) {
+                if (usoCpu >= 10) {
                     contadorRelatorios--;
 
                     if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
                         cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ", usoCpu.toString(), "% ás", dataHoraText);
-                        json.put("text", "A CPU atingiu 90% da capacidade :rotating_light: ");
+                        json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
+                           + " A CPU da máquina com o hostname " + hostName + " está utilizando " + usoCpu + "% da capacidade!");
                         try {
                             Slack.enviarMensagem(json);
                         } catch (IOException ex) {
@@ -185,13 +194,19 @@ public class Computador {
                             Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-
+                    
                 } else {
                     contadorRelatorios = 10;
                 }
 
                 // Alertas na tabela do computador sendo atualizados 
-                conexao.getConnection().update(
+//                conexao.getConnection().update(
+//                        "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
+//                        + "problema_memoria = ? "
+//                        + "WHERE id_computador = ?", problemaCpuRelatorio,
+//                        problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputador);
+
+                conexaoDocker.getConexaoDocker().update(
                         "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
                         + "problema_memoria = ? "
                         + "WHERE id_computador = ?", problemaCpuRelatorio,
@@ -212,7 +227,7 @@ public class Computador {
                     Double usoMemoriaProcesso = usoMemoriaBig.doubleValue();
 
                     // Validando se o processo existe ou não na tabela pelo pid e fk do computador
-                    List<Map<String, Object>> registroProcesso = conexao.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
+                    List<Map<String, Object>> registroProcesso = conexaoDocker.getConexaoDocker().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
 
                     if (usoCpuProcesso > 1 || usoMemoriaProcesso > 1) {
                         if (registroProcesso.isEmpty()) {
@@ -220,7 +235,12 @@ public class Computador {
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcesso = dateFormat.format(LocalDateTime.now());
 
-                            conexao.getConnection().update(
+//                            conexao.getConnection().update(
+//                                    "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
+//                                    + " VALUES (?, ?, ?, ?, ?, ?)",
+//                                    pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputador);
+
+                            conexaoDocker.getConexaoDocker().update(
                                     "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
                                     + " VALUES (?, ?, ?, ?, ?, ?)",
                                     pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputador);
@@ -229,7 +249,6 @@ public class Computador {
                             Processo process = new Processo(pidProcesso, nomeProcesso,
                                     usoCpuProcesso, usoMemoriaProcesso);
 
-                            processos.add(process);
                             System.out.println(process);
 
                         } else {
@@ -237,21 +256,25 @@ public class Computador {
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcessoAtualizado = dateFormat.format(LocalDateTime.now());
 
-                            conexao.getConnection().update(
+                           // conexao.getConnection().update(
+                                   // "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
+                                  //  usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
+
+                            conexaoDocker.getConexaoDocker().update(
                                     "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
                                     usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
                         }
                     }
                 }
-                DateTimeFormatter dtlog = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                String dataHoraLog = dtlog.format(LocalDateTime.now());
+//                DateTimeFormatter dtlog = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//                String dataHoraLog = dtlog.format(LocalDateTime.now());
+//
+//                DateTimeFormatter dtfp = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//                String dataHoraTexto = dtfp.format(LocalDateTime.now());
 
-                DateTimeFormatter dtfp = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-                String dataHoraTexto = dtfp.format(LocalDateTime.now());
+//                cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
 
-                cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
-
-                List<Map<String, Object>> registroProcessoMatar = conexao.getConnection().queryForList("select * from processo_matar where is_executado = ? and fk_computador = ?", false, fkComputador);
+                List<Map<String, Object>> registroProcessoMatar = conexaoDocker.getConexaoDocker().queryForList("select * from processo_matar where is_executado = ? and fk_computador = ?", false, fkComputador);
                 if (registroProcessoMatar != null && !registroProcessoMatar.isEmpty()) {
                     try {
 
@@ -264,7 +287,8 @@ public class Computador {
                         DateTimeFormatter dhm = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                         String dataHoraMorte = dhm.format(LocalDateTime.now());
 
-                        conexao.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
+                       // conexao.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
+                         conexaoDocker.getConexaoDocker().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
                     } catch (Exception e) {
 
                         System.out.println("OCORREU UM ERRO AO FINALIZAR O PROCESSO" + e);
@@ -274,7 +298,7 @@ public class Computador {
                     System.out.println("Nao tem processo para matar!");
                 }
 
-                List<Map<String, Object>> registroNotificar = conexao.getConnection().queryForList("select * from notificar_aluno where is_executado = ? and fk_computador = ?", false, fkComputador);
+                List<Map<String, Object>> registroNotificar = conexaoDocker.getConexaoDocker().queryForList("select * from notificar_aluno where is_executado = ? and fk_computador = ?", false, fkComputador);
                 if (registroNotificar != null && !registroNotificar.isEmpty()) {
 
                     SystemTray tray = SystemTray.getSystemTray();
@@ -294,8 +318,9 @@ public class Computador {
                     trayIcon.displayMessage("ATENÇÂO", "Detectamos muitos processos"
                             + " sendo executados ao mesmo tempo nessa máquina,"
                             + " verifique se está utilizando todos os aplicativos abertos!", TrayIcon.MessageType.WARNING);
-                    
-                    conexao.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
+
+                   // conexao.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
+                     conexaoDocker.getConexaoDocker().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
                 }
             }
         },

@@ -7,6 +7,7 @@ package com.sptech.cybervision.view;
 import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.conexoes.Conexao;
 import com.sptech.cybervision.classes.Slack;
+import com.sptech.cybervision.conexoes.ConexaoDocker;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 public class Chamados extends javax.swing.JFrame {
 
     Conexao conexao = new Conexao();
+    ConexaoDocker conexaoDocker = new ConexaoDocker();
     JSONObject json =  new JSONObject();
 
     /**
@@ -196,7 +198,7 @@ public class Chamados extends javax.swing.JFrame {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         String dataHoraCriacao = dtf.format(LocalDateTime.now());
 
-        List<Map<String, Object>> registroMaquina = conexao.getConnection().queryForList("select * from computador where hostname = ?", hostNameMaquina);
+        List<Map<String, Object>> registroMaquina = conexaoDocker.getConexaoDocker().queryForList("select * from computador where hostname = ?", hostNameMaquina);
 
         if (registroMaquina.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Hostname inválido!");
@@ -209,23 +211,32 @@ public class Chamados extends javax.swing.JFrame {
 
         } else {
             Integer fkComputador = Integer.parseInt(registroMaquina.get(0).get("id_computador").toString());
-            conexao.getConnection().update(
+//            conexao.getConnection().update(
+//                    "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
+//                    + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
+//                    raAluno, hostNameMaquina, descricaoChamado, status, dataHoraCriacao, fkComputador);
+            
+            conexaoDocker.getConexaoDocker().update(
                     "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
                     + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
                     raAluno, hostNameMaquina, descricaoChamado, status, dataHoraCriacao, fkComputador);
             
-            conexao.getConnection().update(
+//            conexao.getConnection().update(
+//                    "UPDATE computador SET problema_fisico = ? WHERE hostname = ?", 
+//                    true, hostNameMaquina);
+            
+             conexaoDocker.getConexaoDocker().update(
                     "UPDATE computador SET problema_fisico = ? WHERE hostname = ?", 
                     true, hostNameMaquina);
-
-            JOptionPane.showMessageDialog(this, "Chamado enviado com sucesso!");
 
             inputRa.setText(null);
             inputHostname.setText(null);
             inputDescricao.setText(null);
             
-             json.put("text", "Um chamado acaba de ser aberto "
-                     + "referente a máquina com o hostname: " + hostNameMaquina + ":rotating_light: ");
+              JOptionPane.showMessageDialog(this, "Chamado enviado com sucesso!");
+            
+             json.put("text", ":rotating_light: ALERTA :rotating_light:\n" + 
+                     "Um chamado acaba de ser aberto referente a máquina com o hostname: " + hostNameMaquina);
                     try {
                         Slack.enviarMensagem(json);
                     } catch (IOException ex) {

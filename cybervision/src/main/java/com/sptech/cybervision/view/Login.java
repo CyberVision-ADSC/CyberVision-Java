@@ -7,6 +7,7 @@ package com.sptech.cybervision.view;
 import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Usuario;
 import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.conexoes.ConexaoDocker;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 public class Login extends javax.swing.JFrame {
 
     Conexao conexao = new Conexao();
+    ConexaoDocker conexaoDocker = new ConexaoDocker();
     AssociarMaquina associar = new AssociarMaquina();
 
     /**
@@ -171,48 +173,30 @@ public class Login extends javax.swing.JFrame {
 
         String emailDigitado = inputEmail.getText();
         String senhaDigitada = new String(inputSenha.getPassword());
-        
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-            String dataHora = dtf.format(LocalDateTime.now());
-            
-            DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            String dataHoraTexto = dtft.format(LocalDateTime.now());
-                  
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+        String dataHora = dtf.format(LocalDateTime.now());
+
+        DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String dataHoraTexto = dtft.format(LocalDateTime.now());
+
         // Validando o email e senha digitada no banco de dados
         try {
-            Map<String, Object> registro = conexao.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
+            Map<String, Object> registro = conexaoDocker.getConexaoDocker().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
 
             // Pegando informações do usuário que fez o login, seu nome, nivel de acesso e o fkFaculdade.
-            List<Map<String, Object>> listaUsuario = conexao.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
+            List<Map<String, Object>> listaUsuario = conexaoDocker.getConexaoDocker().queryForList("select * from usuario where email = ?", emailDigitado);
             String nomeUsuario = listaUsuario.get(0).get("nome").toString();
             String nivelAcesso = listaUsuario.get(0).get("tipo_usuario").toString();
-            Integer fkFaculdade = Integer.parseInt(listaUsuario.get(0).get("fk_faculdade").toString());
-            
+
             //LOG LOGIN SUCESSO
             String nomeUser = nomeUsuario;
- 
             criadorLogs cl = new criadorLogs();
-            cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexão-Login",dataHora), nomeUser, " Logou na aplicação ás ",dataHoraTexto);
-            
-            
-            // Pegando informações da faculdade do usuário que logou, nome fantasia, razão social,
-            // cnpj, cep e número
-            List<Map<String, Object>> listaFaculdade = conexao.getConnection().queryForList("select * from faculdade where id_faculdade = ?", fkFaculdade);
-            String nomeFantasia = listaFaculdade.get(0).get("nome_fantasia").toString();
-            String razaoSocial = listaFaculdade.get(0).get("razao_social").toString();
-            String cnpj = listaFaculdade.get(0).get("cnpj").toString();
-            String cep = listaFaculdade.get(0).get("cep").toString();
-            Integer numero = Integer.parseInt(listaFaculdade.get(0).get("numero").toString());
-
-            // Instânciando a faculdade
-            Faculdade faculdade = new Faculdade(nomeFantasia, razaoSocial, cnpj, cep, numero);
+            cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexão-Login", dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
 
             // Instânciando o usuário
             Usuario usuario = new Usuario(nomeUsuario, emailDigitado, senhaDigitada, nivelAcesso);
 
-            faculdade.adicionarUsuario(usuario);
-            
-            System.out.println(faculdade);
             System.out.println(usuario);
 
             this.dispose();
@@ -221,12 +205,11 @@ public class Login extends javax.swing.JFrame {
         } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
             e.printStackTrace();
-            
+
             // LOG ERRO LOGIN
-           
             criadorLogs cl = new criadorLogs();
-            cl.logErro(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-Erro-Login",dataHora), " Erro ao logar ás ",dataHoraTexto);
-            
+            cl.logErro(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-Erro-Login", dataHora), " Erro ao logar ás ", dataHoraTexto);
+
         }
 
     }//GEN-LAST:event_btn_entrarActionPerformed

@@ -33,8 +33,6 @@ public class Faculdade {
     public Faculdade() {
     }
     
-    
-    
     public void adicionarUsuario(Usuario usuario){
     
         usuarios.add(usuario);

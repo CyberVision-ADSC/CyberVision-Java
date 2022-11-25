@@ -13,22 +13,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class Conexao {
 
-    private JdbcTemplate connection;
-
-    public Conexao() {
-
-        // CONEXÃO MYSQL OU DOCKER
-        BasicDataSource dataSource = new BasicDataSource();
-
-        dataSource​.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
-        dataSource​.setUrl("jdbc:mysql://localhost:3306/cybervision");
-
-        dataSource​.setUsername("root");
-
-        dataSource​.setPassword("nacagawa1333");
-
-        // CONEXÃO SQLSERVER AZURE
+//    private JdbcTemplate connection;
+//
+//    public Conexao() {
+//
+//        BasicDataSource dataSource = new BasicDataSource();
+//
 //        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 //
 //        dataSource.setUrl("jdbc:sqlserver://cybervision-server.database.windows.net:1433;database=cybervision");
@@ -36,15 +26,15 @@ public class Conexao {
 //        dataSource.setUsername("admin-cybervision");
 //
 //        dataSource.setPassword("#Gfgrupo4");
-
-        this.connection = new JdbcTemplate(dataSource);
-
-    }
-
-    public JdbcTemplate getConnection() {
-
-        return connection;
-
-    }
+//
+//        this.connection = new JdbcTemplate(dataSource);
+//
+//    }
+//
+//    public JdbcTemplate getConnection() {
+//
+//        return connection;
+//
+//    }
 
 }
