@@ -11,30 +11,29 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  * @author leona
  */
-public class ConexaoDocker {
+public class ConexaoLocal {
     
-    private JdbcTemplate conexaoDocker;
+    private JdbcTemplate connection;
 
-    public ConexaoDocker() {
+    public ConexaoLocal() {
 
-        // CONEXÃO MYSQL OU DOCKER
         BasicDataSource dataSource = new BasicDataSource();
 
         dataSource​.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         dataSource​.setUrl("jdbc:mysql://localhost:3306/cybervision");
 
-        dataSource​.setUsername("ubuntu");
+        dataSource​.setUsername("root");
 
         dataSource​.setPassword("urubu100");
 
-        this.conexaoDocker = new JdbcTemplate(dataSource);
+        this.connection = new JdbcTemplate(dataSource);
 
     }
 
-    public JdbcTemplate getConexaoDocker() {
+    public JdbcTemplate getConnection() {
 
-        return conexaoDocker;
+        return connection;
 
     }
     

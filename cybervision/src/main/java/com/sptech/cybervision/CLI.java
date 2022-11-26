@@ -9,7 +9,7 @@ import com.sptech.cybervision.classes.Andar;
 import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Sala;
 import com.sptech.cybervision.classes.Usuario;
-import com.sptech.cybervision.conexoes.Conexao;
+import com.sptech.cybervision.conexoes.ConexaoAzure;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -23,7 +23,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 //
 //    public static void main(String[] args) {
 //        Scanner leitor = new Scanner(System.in);
-//        Conexao conexao = new Conexao();
+//        ConexaoAzure conexao = new ConexaoAzure();
 //        Looca looca = new Looca();
 //        Faculdade faculdade = new Faculdade();
 //        Usuario usuario = new Usuario();

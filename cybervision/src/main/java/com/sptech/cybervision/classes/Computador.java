@@ -7,15 +7,20 @@ package com.sptech.cybervision.classes;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.jezhumble.javasysmon.JavaSysMon;
-import com.sptech.cybervision.conexoes.Conexao;
-import com.sptech.cybervision.conexoes.ConexaoDocker;
+import com.sptech.cybervision.conexoes.ConexaoAzure;
+import com.sptech.cybervision.conexoes.ConexaoLocal;
 import com.sptech.cybervision.view.AssociarMaquina;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -27,7 +32,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import logs.criadorLogs;
+import logs.Logs;
 import org.json.JSONObject;
 
 /**
@@ -71,19 +76,18 @@ public class Computador {
     public Computador() {
     }
 
-    Conexao conexao = new Conexao();
-    ConexaoDocker conexaoDocker = new ConexaoDocker();
+    ConexaoAzure conexaoAzure = new ConexaoAzure();
+    ConexaoLocal conexaoLocal = new ConexaoLocal();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
-    criadorLogs cl = new criadorLogs();
+    Logs logs = new Logs();
     JSONObject json = new JSONObject();
     SystemTray tray = SystemTray.getSystemTray();
 
-    //Quantidade de relatórios mínimos para gerar alerta na CPU
     private Integer contadorRelatorios = 10;
     private static final JavaSysMon SYS_MON = new JavaSysMon();
 
-    public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala, String hostName) {
+    public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala, String hostName, Integer fkComputadorLocal) {
 
         //Temporizador que é executado a cada 5 segundos coletando relatórios e processos
         new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -121,16 +125,14 @@ public class Computador {
                 String dataHora = dtf.format(LocalDateTime.now());
 
                 // Inserindo relatórios na tabela
-//                conexao.getConnection().update(
-//                        "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
-//                        + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
-//                        usoCpu, usoDisco, usoRam, dataHora, fkComputador, fkSala);
-
-                conexaoDocker.getConexaoDocker().update(
+                conexaoAzure.getConnection().update(
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
                         + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
                         usoCpu, usoDisco, usoRam, dataHora, fkComputador, fkSala);
 
+                conexaoLocal.getConnection().update(
+                        "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador) VALUES (?, ?, ?, ?, ?)",
+                        usoCpu, usoDisco, usoRam, dataHora, fkComputadorLocal);
                 // Instânciando cada relatório gerado
                 Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, dataHora);
                 System.out.println(relatorio);
@@ -139,19 +141,32 @@ public class Computador {
                 Boolean problemaCpuRelatorio = false;
                 Boolean problemaDiscoRelatorio = false;
                 Boolean problemaMemoriaRelatorio = false;
-                criadorLogs cl = new criadorLogs();
 
                 DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                 String dataHoraText = dtft.format(LocalDateTime.now());
 
                 // Se o DISCO estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoDisco >= 2) {
-                    
                     problemaDiscoRelatorio = true;
-                    cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ", usoDisco.toString(), "% ás ", dataHoraText);
-                   json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
-                           + " O DISCO da máquina com o hostname " + hostName + " está utilizando " + usoDisco + "% da capacidade!");
-                   
+
+                    String caminhoLocalHome = new Computador().criarPastaLog();
+
+                    if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+
+                        logs.logAlerta(String.format("%s\\logs\\%s-Log-alertas", caminhoLocalHome, dataHora),
+                                "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ",
+                                usoDisco.toString(), "% ás ", dataHoraText);
+
+                    } else {
+
+                        logs.logAlerta(String.format("%s/logs/%s-Log-alertas", caminhoLocalHome, dataHora),
+                                "\n A máquina ", hostName, " esta com o disco com uso em nível critico de ",
+                                usoDisco.toString(), "% ás ", dataHoraText);
+                    }
+
+                    json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
+                            + " O DISCO da máquina com o hostname " + hostName + " está utilizando " + usoDisco + "% da capacidade!");
+
                     try {
                         Slack.enviarMensagem(json);
                     } catch (IOException ex) {
@@ -164,9 +179,23 @@ public class Computador {
                 // Se a RAM estiver com mais de 90% sendo usado é gerado o alerta
                 if (usoRam >= 40) {
                     problemaMemoriaRelatorio = true;
-                    cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ", usoRam.toString(), "% ás ", dataHoraText);
+
+                    String caminhoLocalHome = new Computador().criarPastaLog();
+
+                    if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+
+                        logs.logAlerta(String.format("%s\\logs\\%s-Log-alertas", caminhoLocalHome, dataHora),
+                                "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ",
+                                usoRam.toString(), "% ás ", dataHoraText);
+
+                    } else {
+
+                        logs.logAlerta(String.format("%s/logs/%s-Log-alertas", caminhoLocalHome, dataHora),
+                                "\n A máquina ", hostName, " esta com a ram com uso em nível critico de ",
+                                usoRam.toString(), "% ás ", dataHoraText);
+                    }
                     json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
-                           + " A MEMÓRIA RAM da máquina com o hostname " + hostName + " está utilizando " + usoRam + "% da capacidade!");
+                            + " A MEMÓRIA RAM da máquina com o hostname " + hostName + " está utilizando " + usoRam + "% da capacidade!");
                     try {
                         Slack.enviarMensagem(json);
                     } catch (IOException ex) {
@@ -183,9 +212,23 @@ public class Computador {
 
                     if (contadorRelatorios <= 0) {
                         problemaCpuRelatorio = true;
-                        cl.logAlerta(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\alertas\\%s-Log-alertas", dataHora), "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ", usoCpu.toString(), "% ás", dataHoraText);
+
+                        String caminhoLocalHome = new Computador().criarPastaLog();
+
+                        if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+
+                            logs.logAlerta(String.format("%s\\logs\\%s-Log-alertas", caminhoLocalHome, dataHora),
+                                    "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ",
+                                    usoCpu.toString(), "% ás", dataHoraText);
+
+                        } else {
+
+                            logs.logAlerta(String.format("%s/logs/%s-Log-alertas", caminhoLocalHome, dataHora),
+                                    "\n A máquina ", hostName, " esta com a cpu com uso em nível critico de ",
+                                    usoCpu.toString(), "% ás", dataHoraText);
+                        }
                         json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
-                           + " A CPU da máquina com o hostname " + hostName + " está utilizando " + usoCpu + "% da capacidade!");
+                                + " A CPU da máquina com o hostname " + hostName + " está utilizando " + usoCpu + "% da capacidade!");
                         try {
                             Slack.enviarMensagem(json);
                         } catch (IOException ex) {
@@ -194,25 +237,23 @@ public class Computador {
                             Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    
+
                 } else {
                     contadorRelatorios = 10;
                 }
 
-                // Alertas na tabela do computador sendo atualizados 
-//                conexao.getConnection().update(
-//                        "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
-//                        + "problema_memoria = ? "
-//                        + "WHERE id_computador = ?", problemaCpuRelatorio,
-//                        problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputador);
-
-                conexaoDocker.getConexaoDocker().update(
+                conexaoAzure.getConnection().update(
                         "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
                         + "problema_memoria = ? "
                         + "WHERE id_computador = ?", problemaCpuRelatorio,
                         problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputador);
+                
+                conexaoLocal.getConnection().update(
+                        "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
+                        + "problema_memoria = ? "
+                        + "WHERE id_computador = ?", problemaCpuRelatorio,
+                        problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputadorLocal);
 
-                // Pegando todos os processos que estão ocorrendo na máquina
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
                     String nomeProcesso = processo.getNome();
@@ -227,7 +268,7 @@ public class Computador {
                     Double usoMemoriaProcesso = usoMemoriaBig.doubleValue();
 
                     // Validando se o processo existe ou não na tabela pelo pid e fk do computador
-                    List<Map<String, Object>> registroProcesso = conexaoDocker.getConexaoDocker().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
+                    List<Map<String, Object>> registroProcesso = conexaoAzure.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
 
                     if (usoCpuProcesso > 1 || usoMemoriaProcesso > 1) {
                         if (registroProcesso.isEmpty()) {
@@ -235,17 +276,17 @@ public class Computador {
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcesso = dateFormat.format(LocalDateTime.now());
 
-//                            conexao.getConnection().update(
-//                                    "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
-//                                    + " VALUES (?, ?, ?, ?, ?, ?)",
-//                                    pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputador);
-
-                            conexaoDocker.getConexaoDocker().update(
+                            conexaoAzure.getConnection().update(
                                     "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
                                     + " VALUES (?, ?, ?, ?, ?, ?)",
                                     pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputador);
 
-                            // Instânciando processo inserido
+                            conexaoLocal.getConnection().update(
+                                    "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
+                                    + " VALUES (?, ?, ?, ?, ?, ?)",
+                                    pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputadorLocal);
+                            
+                            
                             Processo process = new Processo(pidProcesso, nomeProcesso,
                                     usoCpuProcesso, usoMemoriaProcesso);
 
@@ -256,41 +297,33 @@ public class Computador {
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcessoAtualizado = dateFormat.format(LocalDateTime.now());
 
-                           // conexao.getConnection().update(
-                                   // "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
-                                  //  usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
+                            conexaoAzure.getConnection().update(
+                                    "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
+                                    usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
 
-                            conexaoDocker.getConexaoDocker().update(
+                            conexaoLocal.getConnection().update(
                                     "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
                                     usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
                         }
                     }
                 }
-//                DateTimeFormatter dtlog = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//                String dataHoraLog = dtlog.format(LocalDateTime.now());
-//
-//                DateTimeFormatter dtfp = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-//                String dataHoraTexto = dtfp.format(LocalDateTime.now());
 
-//                cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\banco-de-dados\\%s-Log-Status-BD", dataHoraLog), "\n A máquina ", hostName, " Inseriu no banco ás ", dataHoraTexto);
-
-                List<Map<String, Object>> registroProcessoMatar = conexaoDocker.getConexaoDocker().queryForList("select * from processo_matar where is_executado = ? and fk_computador = ?", false, fkComputador);
+                List<Map<String, Object>> registroProcessoMatar = conexaoAzure.getConnection().queryForList("select * from processo_matar where is_executado = ? and fk_computador = ?", false, fkComputador);
                 if (registroProcessoMatar != null && !registroProcessoMatar.isEmpty()) {
                     try {
 
                         Integer pidMatar = Integer.parseInt(registroProcessoMatar.get(0).get("pid_processo").toString());
-                        // Kill the process
+
                         SYS_MON.killProcess(pidMatar);
-                        // Kill the process and its children, or only the children
                         SYS_MON.killProcessTree(pidMatar, true);
                         System.out.println("Processo morto!");
                         DateTimeFormatter dhm = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                         String dataHoraMorte = dhm.format(LocalDateTime.now());
 
-                       // conexao.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
-                         conexaoDocker.getConexaoDocker().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
-                    } catch (Exception e) {
+                        conexaoAzure.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
 
+                        conexaoLocal.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
+                    } catch (Exception e) {
                         System.out.println("OCORREU UM ERRO AO FINALIZAR O PROCESSO" + e);
                     }
 
@@ -298,7 +331,7 @@ public class Computador {
                     System.out.println("Nao tem processo para matar!");
                 }
 
-                List<Map<String, Object>> registroNotificar = conexaoDocker.getConexaoDocker().queryForList("select * from notificar_aluno where is_executado = ? and fk_computador = ?", false, fkComputador);
+                List<Map<String, Object>> registroNotificar = conexaoAzure.getConnection().queryForList("select * from notificar_aluno where is_executado = ? and fk_computador = ?", false, fkComputador);
                 if (registroNotificar != null && !registroNotificar.isEmpty()) {
 
                     SystemTray tray = SystemTray.getSystemTray();
@@ -319,14 +352,102 @@ public class Computador {
                             + " sendo executados ao mesmo tempo nessa máquina,"
                             + " verifique se está utilizando todos os aplicativos abertos!", TrayIcon.MessageType.WARNING);
 
-                   // conexao.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
-                     conexaoDocker.getConexaoDocker().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
+                    conexaoAzure.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
+                    conexaoLocal.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
                 }
             }
         },
                 0, 5000);
 
     }
+
+    private String retorneComando(String comando) throws IOException {
+
+        final ArrayList<String> comandos = new ArrayList<String>();
+
+        Looca looca = new Looca();
+
+        if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+
+            comandos.add("cmd");
+            comandos.add("/c");
+            comandos.add(comando);
+        } else {
+
+            comandos.add("/bin/bash");
+            comandos.add("-c");
+            comandos.add(comando);
+        }
+
+        BufferedReader br = null;
+        String retorno = "";
+        try {
+            final ProcessBuilder p = new ProcessBuilder(comandos);
+            final Process process = p.start();
+            final InputStream is = process.getInputStream();
+            final InputStreamReader isr = new InputStreamReader(is);
+            br = new BufferedReader(isr);
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                retorno = line;
+            }
+
+        } catch (IOException ioe) {
+            System.out.println("Erro ao executar comando" + ioe.getMessage());
+        } finally {
+            secureClose(br);
+            return retorno;
+        }
+
+    }
+
+    private void secureClose(final Closeable resource) {
+        try {
+            if (resource != null) {
+                resource.close();
+            }
+        } catch (IOException ex) {
+            System.out.println("Erro = " + ex.getMessage());
+        }
+    }
+
+    public String buscarCaminhoLocal() throws IOException {
+
+        Looca looca = new Looca();
+
+        String caminhoLocal;
+        if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+            caminhoLocal = this.retorneComando("echo %homedrive%%homepath%");
+
+        } else {
+            this.retorneComando("chmod 777 $HOME");
+            caminhoLocal = this.retorneComando("echo $HOME");
+
+        }
+        return caminhoLocal;
+    }
+
+    public String criarPastaLog() {
+
+        String caminhoLocalHome = "";
+
+        try {
+
+            caminhoLocalHome = new Computador().buscarCaminhoLocal();
+
+            File arquivo = new File(String.format("%s\\logs", caminhoLocalHome));
+
+            arquivo.mkdir();
+
+        } catch (IOException ex) {
+            System.out.println("Erro ao criar arquivo para os logs");
+        }
+
+        return caminhoLocalHome;
+
+    }
+    
 
     public String getHostname() {
         return hostname;

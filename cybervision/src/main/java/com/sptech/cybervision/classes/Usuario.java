@@ -5,8 +5,8 @@
 package com.sptech.cybervision.classes;
 
 import com.github.britooo.looca.api.core.Looca;
-import com.sptech.cybervision.conexoes.Conexao;
-import com.sptech.cybervision.conexoes.ConexaoDocker;
+import com.sptech.cybervision.conexoes.ConexaoAzure;
+import com.sptech.cybervision.conexoes.ConexaoLocal;
 import com.sptech.cybervision.view.AssociarMaquina;
 import com.sptech.cybervision.view.Logado;
 
@@ -21,8 +21,8 @@ public class Usuario {
     private String senha;
     private String nivelAcesso;
 
-    Conexao conexao = new Conexao();
-    ConexaoDocker conexaoDocker = new ConexaoDocker();
+    ConexaoAzure conexaoAzure = new ConexaoAzure();
+    ConexaoLocal conexaoLocal = new ConexaoLocal();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     Logado logado = new Logado();
@@ -38,11 +38,10 @@ public class Usuario {
     public Usuario() {
     }
 
-    public void associarMaquina(String hostName, Boolean isAtivoComputador, Integer fkComputador, Integer fkSala) {
+    public void associarMaquina(String hostName, Boolean isAtivoComputador, Integer fkComputador, Integer fkSala, Integer fkComputadorLocal) {
 
         Long converteGiga = 1073741824l; // Conversor de bytes para Giga
         
-        // Usando o looca para pegar informações da máquina
         String nomeProcessador = looca.getProcessador().getNome();
         Integer arquitetura = looca.getSistema().getArquitetura();
         String fabricante = looca.getSistema().getFabricante();
@@ -50,16 +49,17 @@ public class Usuario {
         Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / converteGiga;
         String sistemaOperacional = looca.getSistema().getSistemaOperacional();
 
+        System.out.println("CHEGUEI NO LOOOOCOCAA");
         // Atualizando a máquina no banco com os dados coletados
-//        conexao.getConnection().update(
-//                "UPDATE computador SET processador = ?, arquitetura = ?, "
-//                + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
-//                + "problema_cpu = ?, problema_disco = ?, problema_memoria = ?, problema_fisico = ?,"
-//                + " is_ativo = ? WHERE hostname = ?",
-//                nomeProcessador, arquitetura, fabricante, memoriaRam,
-//                tamanhoDisco, sistemaOperacional, false, false, false, false, isAtivoComputador, hostName);
-//        
-         conexaoDocker.getConexaoDocker().update(
+        conexaoAzure.getConnection().update(
+                "UPDATE computador SET processador = ?, arquitetura = ?, "
+                + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
+                + "problema_cpu = ?, problema_disco = ?, problema_memoria = ?, problema_fisico = ?,"
+                + " is_ativo = ? WHERE hostname = ?",
+                nomeProcessador, arquitetura, fabricante, memoriaRam,
+                tamanhoDisco, sistemaOperacional, false, false, false, false, isAtivoComputador, hostName);
+        
+         conexaoLocal.getConnection().update(
                 "UPDATE computador SET processador = ?, arquitetura = ?, "
                 + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
                 + "problema_cpu = ?, problema_disco = ?, problema_memoria = ?, problema_fisico = ?,"
@@ -72,11 +72,10 @@ public class Usuario {
                 arquitetura, fabricante, memoriaRam, tamanhoDisco,
                 sistemaOperacional, false, false, false, false, isAtivoComputador);
 
-        // sala.adicionarComputador(computador);
         System.out.println(computador.toString());
 
         // Chamando função para coletar relatórios e processos da máquina
-        computador.coletarRelatoriosProcessos(fkComputador, fkSala, hostName);
+        computador.coletarRelatoriosProcessos(fkComputador, fkSala, hostName, fkComputadorLocal);
 
     }
     

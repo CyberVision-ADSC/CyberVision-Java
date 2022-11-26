@@ -1,4 +1,5 @@
 com\sptech\cybervision\classes\Computador.class
+com\sptech\cybervision\conexoes\ConexaoAzure.class
 com\sptech\cybervision\view\Chamados$2.class
 com\sptech\cybervision\Main.class
 com\sptech\cybervision\classes\Sala.class
@@ -18,14 +19,13 @@ com\sptech\cybervision\conexoes\App.class
 com\sptech\cybervision\view\Login$1.class
 com\sptech\cybervision\view\AssociarMaquina.class
 com\sptech\cybervision\view\Chamados$1.class
-com\sptech\cybervision\conexoes\ConexaoDocker.class
 com\sptech\cybervision\view\Logado$2.class
+com\sptech\cybervision\conexoes\ConexaoLocal.class
 com\sptech\cybervision\view\AssociarMaquina$3.class
-com\sptech\cybervision\conexoes\Conexao.class
 com\sptech\cybervision\classes\Andar.class
 com\sptech\cybervision\classes\Computador$1.class
+logs\Logs.class
 com\sptech\cybervision\view\Chamados$5.class
 com\sptech\cybervision\view\AssociarMaquina$2.class
 com\sptech\cybervision\view\Logado.class
 com\sptech\cybervision\view\Login.class
-logs\criadorLogs.class

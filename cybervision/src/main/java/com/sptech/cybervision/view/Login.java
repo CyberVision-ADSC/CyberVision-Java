@@ -4,16 +4,21 @@
  */
 package com.sptech.cybervision.view;
 
+import com.github.britooo.looca.api.core.Looca;
+import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Usuario;
-import com.sptech.cybervision.conexoes.Conexao;
-import com.sptech.cybervision.conexoes.ConexaoDocker;
+import com.sptech.cybervision.conexoes.ConexaoAzure;
+import com.sptech.cybervision.conexoes.ConexaoLocal;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import logs.criadorLogs;
+import logs.Logs;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
@@ -22,9 +27,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
  */
 public class Login extends javax.swing.JFrame {
 
-    Conexao conexao = new Conexao();
-    ConexaoDocker conexaoDocker = new ConexaoDocker();
+    ConexaoAzure conexaoAzure = new ConexaoAzure();
+    ConexaoLocal conexaoLocal = new ConexaoLocal();
     AssociarMaquina associar = new AssociarMaquina();
+    Looca looca = new Looca();
+    Logs logs = new Logs();
 
     /**
      * Creates new form Login
@@ -180,24 +187,23 @@ public class Login extends javax.swing.JFrame {
         DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String dataHoraTexto = dtft.format(LocalDateTime.now());
 
-        // Validando o email e senha digitada no banco de dados
         try {
-            Map<String, Object> registro = conexaoDocker.getConexaoDocker().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
+            Map<String, Object> registro = conexaoAzure.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
 
-            // Pegando informações do usuário que fez o login, seu nome, nivel de acesso e o fkFaculdade.
-            List<Map<String, Object>> listaUsuario = conexaoDocker.getConexaoDocker().queryForList("select * from usuario where email = ?", emailDigitado);
+            System.out.println("LOGUEI");
+            List<Map<String, Object>> listaUsuario = conexaoAzure.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
             String nomeUsuario = listaUsuario.get(0).get("nome").toString();
-            String nivelAcesso = listaUsuario.get(0).get("tipo_usuario").toString();
 
-            //LOG LOGIN SUCESSO
             String nomeUser = nomeUsuario;
-            criadorLogs cl = new criadorLogs();
-            cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexão-Login", dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
+            String caminhoLocalHome = new Computador().criarPastaLog();
 
-            // Instânciando o usuário
-            Usuario usuario = new Usuario(nomeUsuario, emailDigitado, senhaDigitada, nivelAcesso);
+            if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
 
-            System.out.println(usuario);
+                logs.logConexao(String.format("%s\\logs\\%s-Log-Conexão-Login", caminhoLocalHome, dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
+            } else {
+
+                logs.logConexao(String.format("%s/logs/%s-Log-Conexão-Login", caminhoLocalHome, dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
+            }
 
             this.dispose();
             associar.setVisible(true);
@@ -206,9 +212,15 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos!");
             e.printStackTrace();
 
-            // LOG ERRO LOGIN
-            criadorLogs cl = new criadorLogs();
-            cl.logErro(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-Erro-Login", dataHora), " Erro ao logar ás ", dataHoraTexto);
+            String caminhoLocalHome = new Computador().criarPastaLog();
+            
+            if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+
+                logs.logErro(String.format("%s\\logs\\%s-Log-Erro-Login",caminhoLocalHome, dataHora), " Erro ao logar ás ", dataHoraTexto);
+            } else {
+
+                logs.logErro(String.format("%s/logs/%s-Log-Erro-Login", caminhoLocalHome, dataHora), " Erro ao logar ás ", dataHoraTexto);
+            }
 
         }
 

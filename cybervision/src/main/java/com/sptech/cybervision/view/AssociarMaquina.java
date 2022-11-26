@@ -7,17 +7,18 @@ package com.sptech.cybervision.view;
 import com.sptech.cybervision.view.Logado;
 import com.github.britooo.looca.api.core.Looca;
 import com.sptech.cybervision.classes.Andar;
+import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Sala;
 import com.sptech.cybervision.classes.Usuario;
-import com.sptech.cybervision.conexoes.Conexao;
-import com.sptech.cybervision.conexoes.ConexaoDocker;
+import com.sptech.cybervision.conexoes.ConexaoAzure;
+import com.sptech.cybervision.conexoes.ConexaoLocal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import logs.criadorLogs;
+import logs.Logs;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
@@ -27,11 +28,11 @@ import org.springframework.dao.EmptyResultDataAccessException;
 public class AssociarMaquina extends javax.swing.JFrame {
 
     Looca looca = new Looca();
-    Conexao conexao = new Conexao();
-    ConexaoDocker conexaoDocker = new ConexaoDocker();
+    ConexaoAzure conexaoAzure = new ConexaoAzure();
+    ConexaoLocal conexaoLocal = new ConexaoLocal();
     Logado logado = new Logado();
     Faculdade faculdade = new Faculdade();
-   
+    Logs logs = new Logs();
 
     /**
      * Creates new form Logado
@@ -161,41 +162,59 @@ public class AssociarMaquina extends javax.swing.JFrame {
         // TODO add your handling code here:
         Usuario usuario = new Usuario();
         String hostName = inputHostName.getText();
-        
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-            String dataHora = dtf.format(LocalDateTime.now());
-            
-            DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            String dataHoraTexto = dtft.format(LocalDateTime.now());
-                  
-        // Checando se o hostname digitado pelo usuário realmente existe no banco
-        try {
-            Map<String, Object> registroHost = conexaoDocker.getConexaoDocker().queryForMap(
-                    "select * from computador WHERE hostname = ?", hostName);
-            
-            criadorLogs cl = new criadorLogs();
-             cl.logConexao(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\conexao\\%s-Log-Conexao-Maquina",dataHora),hostName ," Foi associada ás ",dataHoraTexto);
-           
 
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+        String dataHora = dtf.format(LocalDateTime.now());
+
+        DateTimeFormatter dtft = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String dataHoraTexto = dtft.format(LocalDateTime.now());
+
+        try {
+            Map<String, Object> registroHost = conexaoAzure.getConnection().queryForMap(
+                    "select * from computador WHERE hostname = ?", hostName);
+            System.out.println("ENCONTRADO");
+
+            String caminhoLocalHome = new Computador().criarPastaLog();
+
+            if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+
+                logs.logConexao(String.format("%s\\logs\\%s-Log-Conexao-Maquina", caminhoLocalHome, dataHora), hostName, " Foi associada ás ", dataHoraTexto);
+
+            } else {
+
+                logs.logConexao(String.format("%s/logs/%s-Log-Conexao-Maquina", caminhoLocalHome, dataHora), hostName, " Foi associada ás ", dataHoraTexto);
+            }
             // Pegando informçãoes do computador, se ele está ativo, fkSala e o seu ID.
-            List<Map<String, Object>> listaComputador = conexaoDocker.getConexaoDocker().queryForList("select * from computador where hostname = ?", hostName);
+            List<Map<String, Object>> listaComputador = conexaoAzure.getConnection().queryForList("select * from computador where hostname = ?", hostName);
             Boolean isAtivoComputador = Boolean.parseBoolean(listaComputador.get(0).get("is_ativo").toString());
             Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
             Integer fkComputador = Integer.parseInt(listaComputador.get(0).get("id_computador").toString());
 
+            List<Map<String, Object>> listaHostname = conexaoLocal.getConnection().queryForList("select * from computador where hostname = ?", hostName);
+
+            if (listaHostname.isEmpty()) {
+                conexaoLocal.getConnection().update("INSERT INTO computador (id_computador, hostname) VALUES (?, ?)", 1, hostName);
+            }
+            Integer fkComputadorLocal = 1;
             
-            //Chamando função para associar a máquina  cujo hostname foi inserido
-            usuario.associarMaquina(hostName, isAtivoComputador, fkComputador, fkSala);
+            usuario.associarMaquina(hostName, isAtivoComputador, fkComputador, fkSala, fkComputadorLocal);
 
             this.dispose();
             logado.setVisible(true);
 
         } catch (EmptyResultDataAccessException e) {
             JOptionPane.showMessageDialog(this, "Hostname não encontrado!");
-            criadorLogs cl = new criadorLogs();
-             cl.logErro(String.format("C:\\Users\\leona\\OneDrive\\Área de Trabalho\\repositorios_cybervision\\CyberVision-Java\\cybervision\\logs\\erros\\%s-Log-erros-maquina",dataHora), " Erro ao associar ás ",dataHoraTexto);
-           
 
+            String caminhoLocalHome = new Computador().criarPastaLog();
+
+            if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+
+                logs.logErro(String.format("%s\\logs\\%s-Log-erros-maquina", caminhoLocalHome, dataHora), " Erro ao associar ás ", dataHoraTexto);
+
+            } else {
+
+                logs.logErro(String.format("%s/logs/%s-Log-erros-maquina", caminhoLocalHome, dataHora), " Erro ao associar ás ", dataHoraTexto);
+            }
         }
 
 
