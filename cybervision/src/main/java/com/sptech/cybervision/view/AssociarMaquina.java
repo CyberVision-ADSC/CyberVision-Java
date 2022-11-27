@@ -182,7 +182,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
             } else {
 
-                logs.logConexao(String.format("%s/logs/%s-Log-Conexao-Maquina", caminhoLocalHome, dataHora), hostName, " Foi associada ás ", dataHoraTexto);
+                logs.logConexao(String.format("%s/Desktop/logs/%s-Log-Conexao-Maquina", caminhoLocalHome, dataHora), hostName, " Foi associada ás ", dataHoraTexto);
             }
             // Pegando informçãoes do computador, se ele está ativo, fkSala e o seu ID.
             List<Map<String, Object>> listaComputador = conexaoAzure.getConnection().queryForList("select * from computador where hostname = ?", hostName);
