@@ -7,6 +7,7 @@ package com.sptech.cybervision.classes;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.jezhumble.javasysmon.JavaSysMon;
+import com.sptech.cybervision.conexoes.ConexaoAws;
 import com.sptech.cybervision.conexoes.ConexaoAzure;
 import com.sptech.cybervision.conexoes.ConexaoLocal;
 import com.sptech.cybervision.view.AssociarMaquina;
@@ -78,6 +79,7 @@ public class Computador {
 
     ConexaoAzure conexaoAzure = new ConexaoAzure();
     ConexaoLocal conexaoLocal = new ConexaoLocal();
+    ConexaoAws conexaoAws = new ConexaoAws();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     Logs logs = new Logs();
@@ -125,6 +127,11 @@ public class Computador {
                 String dataHora = dtf.format(LocalDateTime.now());
 
                 // Inserindo relatórios na tabela
+                conexaoAws.getConnection().update(
+                        "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
+                        + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
+                        usoCpu, usoDisco, usoRam, dataHora, fkComputador, fkSala);
+
                 conexaoAzure.getConnection().update(
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
                         + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
@@ -146,7 +153,7 @@ public class Computador {
                 String dataHoraText = dtft.format(LocalDateTime.now());
 
                 // Se o DISCO estiver com mais de 90% sendo usado é gerado o alerta
-                if (usoDisco >= 2) {
+                if (usoDisco >= 90) {
                     problemaDiscoRelatorio = true;
 
                     String caminhoLocalHome = new Computador().criarPastaLog();
@@ -177,7 +184,7 @@ public class Computador {
                 }
 
                 // Se a RAM estiver com mais de 90% sendo usado é gerado o alerta
-                if (usoRam >= 40) {
+                if (usoRam >= 90) {
                     problemaMemoriaRelatorio = true;
 
                     String caminhoLocalHome = new Computador().criarPastaLog();
@@ -207,7 +214,7 @@ public class Computador {
 
                 // Se a CPU estiver com mais de 80% sendo usado em 10 relatórios seguidos 
                 // é gerado o alerta
-                if (usoCpu >= 10) {
+                if (usoCpu >= 80) {
                     contadorRelatorios--;
 
                     if (contadorRelatorios <= 0) {
@@ -242,17 +249,31 @@ public class Computador {
                     contadorRelatorios = 10;
                 }
 
+                conexaoAws.getConnection().update(
+                        "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
+                        + "problema_memoria = ? "
+                        + "WHERE id_computador = ?", problemaCpuRelatorio,
+                        problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputador);
+
                 conexaoAzure.getConnection().update(
                         "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
                         + "problema_memoria = ? "
                         + "WHERE id_computador = ?", problemaCpuRelatorio,
                         problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputador);
-                
+
                 conexaoLocal.getConnection().update(
                         "UPDATE computador SET problema_cpu = ?, problema_disco = ?, "
                         + "problema_memoria = ? "
                         + "WHERE id_computador = ?", problemaCpuRelatorio,
                         problemaDiscoRelatorio, problemaMemoriaRelatorio, fkComputadorLocal);
+
+            }
+        },
+                0, 5000);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
 
                 for (com.github.britooo.looca.api.group.processos.Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
                     Integer pidProcesso = processo.getPid();
@@ -268,13 +289,18 @@ public class Computador {
                     Double usoMemoriaProcesso = usoMemoriaBig.doubleValue();
 
                     // Validando se o processo existe ou não na tabela pelo pid e fk do computador
-                    List<Map<String, Object>> registroProcesso = conexaoAzure.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
+                    List<Map<String, Object>> registroProcesso = conexaoAws.getConnection().queryForList("select * from processo where pid = ? and fk_computador = ?", pidProcesso, fkComputador);
 
                     if (usoCpuProcesso > 1 || usoMemoriaProcesso > 1) {
                         if (registroProcesso.isEmpty()) {
 
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcesso = dateFormat.format(LocalDateTime.now());
+
+                            conexaoAws.getConnection().update(
+                                    "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
+                                    + " VALUES (?, ?, ?, ?, ?, ?)",
+                                    pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputador);
 
                             conexaoAzure.getConnection().update(
                                     "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
@@ -285,8 +311,7 @@ public class Computador {
                                     "INSERT INTO processo (pid, nome, uso_cpu, uso_memoria, data_hora_atualizado, fk_computador)"
                                     + " VALUES (?, ?, ?, ?, ?, ?)",
                                     pidProcesso, nomeProcesso, usoCpuProcesso, usoMemoriaProcesso, dataHoraProcesso, fkComputadorLocal);
-                            
-                            
+
                             Processo process = new Processo(pidProcesso, nomeProcesso,
                                     usoCpuProcesso, usoMemoriaProcesso);
 
@@ -296,6 +321,10 @@ public class Computador {
                             // Se o processo existir na tabela ele é apenas atualizado com dados atuais
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
                             String dataHoraProcessoAtualizado = dateFormat.format(LocalDateTime.now());
+
+                            conexaoAws.getConnection().update(
+                                    "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
+                                    usoCpuProcesso, usoMemoriaProcesso, dataHoraProcessoAtualizado, pidProcesso);
 
                             conexaoAzure.getConnection().update(
                                     "UPDATE processo SET uso_cpu = ?, uso_memoria = ?, data_hora_atualizado = ? WHERE pid = ?",
@@ -308,7 +337,15 @@ public class Computador {
                     }
                 }
 
-                List<Map<String, Object>> registroProcessoMatar = conexaoAzure.getConnection().queryForList("select * from processo_matar where is_executado = ? and fk_computador = ?", false, fkComputador);
+            }
+
+        }, 0, 5000);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                List<Map<String, Object>> registroProcessoMatar = conexaoAws.getConnection().queryForList("select * from processo_matar where is_executado = ? and fk_computador = ?", false, fkComputador);
                 if (registroProcessoMatar != null && !registroProcessoMatar.isEmpty()) {
                     try {
 
@@ -319,6 +356,8 @@ public class Computador {
                         System.out.println("Processo morto!");
                         DateTimeFormatter dhm = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
                         String dataHoraMorte = dhm.format(LocalDateTime.now());
+
+                        conexaoAws.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
 
                         conexaoAzure.getConnection().update("UPDATE processo_matar SET is_executado = ?, data_hora_executado = ?", true, dataHoraMorte);
 
@@ -331,7 +370,14 @@ public class Computador {
                     System.out.println("Nao tem processo para matar!");
                 }
 
-                List<Map<String, Object>> registroNotificar = conexaoAzure.getConnection().queryForList("select * from notificar_aluno where is_executado = ? and fk_computador = ?", false, fkComputador);
+            }
+        }, 0, 2000);
+
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                List<Map<String, Object>> registroNotificar = conexaoAws.getConnection().queryForList("select * from notificar_aluno where is_executado = ? and fk_computador = ?", false, fkComputador);
                 if (registroNotificar != null && !registroNotificar.isEmpty()) {
 
                     SystemTray tray = SystemTray.getSystemTray();
@@ -352,12 +398,14 @@ public class Computador {
                             + " sendo executados ao mesmo tempo nessa máquina,"
                             + " verifique se está utilizando todos os aplicativos abertos!", TrayIcon.MessageType.WARNING);
 
+                    conexaoAws.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
                     conexaoAzure.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
                     conexaoLocal.getConnection().update("UPDATE notificar_aluno SET is_executado = ?, data_hora_executado = ?", true, dataHoraNotificacao);
                 }
+
             }
-        },
-                0, 5000);
+
+        }, 0, 2000);
 
     }
 
@@ -447,7 +495,6 @@ public class Computador {
         return caminhoLocalHome;
 
     }
-    
 
     public String getHostname() {
         return hostname;

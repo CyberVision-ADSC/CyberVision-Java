@@ -5,6 +5,7 @@
 package com.sptech.cybervision.classes;
 
 import com.github.britooo.looca.api.core.Looca;
+import com.sptech.cybervision.conexoes.ConexaoAws;
 import com.sptech.cybervision.conexoes.ConexaoAzure;
 import com.sptech.cybervision.conexoes.ConexaoLocal;
 import com.sptech.cybervision.view.AssociarMaquina;
@@ -23,6 +24,7 @@ public class Usuario {
 
     ConexaoAzure conexaoAzure = new ConexaoAzure();
     ConexaoLocal conexaoLocal = new ConexaoLocal();
+    ConexaoAws conexaoAws = new ConexaoAws();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     Logado logado = new Logado();
@@ -51,6 +53,16 @@ public class Usuario {
 
         System.out.println("CHEGUEI NO LOOOOCOCAA");
         // Atualizando a máquina no banco com os dados coletados
+        
+        
+        conexaoAws.getConnection().update(
+                "UPDATE computador SET processador = ?, arquitetura = ?, "
+                + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "
+                + "problema_cpu = ?, problema_disco = ?, problema_memoria = ?, problema_fisico = ?,"
+                + " is_ativo = ? WHERE hostname = ?",
+                nomeProcessador, arquitetura, fabricante, memoriaRam,
+                tamanhoDisco, sistemaOperacional, false, false, false, false, isAtivoComputador, hostName);
+        
         conexaoAzure.getConnection().update(
                 "UPDATE computador SET processador = ?, arquitetura = ?, "
                 + "fabricante = ?, ram = ?, disco = ?, sistema_operacional = ?, "

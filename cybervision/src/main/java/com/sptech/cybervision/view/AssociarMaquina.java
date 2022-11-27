@@ -11,6 +11,7 @@ import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Sala;
 import com.sptech.cybervision.classes.Usuario;
+import com.sptech.cybervision.conexoes.ConexaoAws;
 import com.sptech.cybervision.conexoes.ConexaoAzure;
 import com.sptech.cybervision.conexoes.ConexaoLocal;
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
     Looca looca = new Looca();
     ConexaoAzure conexaoAzure = new ConexaoAzure();
     ConexaoLocal conexaoLocal = new ConexaoLocal();
+    ConexaoAws conexaoAws = new ConexaoAws();
     Logado logado = new Logado();
     Faculdade faculdade = new Faculdade();
     Logs logs = new Logs();
@@ -170,9 +172,9 @@ public class AssociarMaquina extends javax.swing.JFrame {
         String dataHoraTexto = dtft.format(LocalDateTime.now());
 
         try {
-            Map<String, Object> registroHost = conexaoAzure.getConnection().queryForMap(
+            conexaoAws.getConnection().queryForMap(
                     "select * from computador WHERE hostname = ?", hostName);
-            System.out.println("ENCONTRADO");
+            
 
             String caminhoLocalHome = new Computador().criarPastaLog();
 
@@ -182,10 +184,10 @@ public class AssociarMaquina extends javax.swing.JFrame {
 
             } else {
 
-                logs.logConexao(String.format("%s/Desktop/logs/%s-Log-Conexao-Maquina", caminhoLocalHome, dataHora), hostName, " Foi associada ás ", dataHoraTexto);
+                logs.logConexao(String.format("%s/logs/%s-Log-Conexao-Maquina", caminhoLocalHome, dataHora), hostName, " Foi associada ás ", dataHoraTexto);
             }
             // Pegando informçãoes do computador, se ele está ativo, fkSala e o seu ID.
-            List<Map<String, Object>> listaComputador = conexaoAzure.getConnection().queryForList("select * from computador where hostname = ?", hostName);
+            List<Map<String, Object>> listaComputador = conexaoAws.getConnection().queryForList("select * from computador where hostname = ?", hostName);
             Boolean isAtivoComputador = Boolean.parseBoolean(listaComputador.get(0).get("is_ativo").toString());
             Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
             Integer fkComputador = Integer.parseInt(listaComputador.get(0).get("id_computador").toString());
@@ -195,6 +197,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
             if (listaHostname.isEmpty()) {
                 conexaoLocal.getConnection().update("INSERT INTO computador (id_computador, hostname) VALUES (?, ?)", 1, hostName);
             }
+            
             Integer fkComputadorLocal = 1;
             
             usuario.associarMaquina(hostName, isAtivoComputador, fkComputador, fkSala, fkComputadorLocal);

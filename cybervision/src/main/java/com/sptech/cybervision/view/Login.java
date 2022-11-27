@@ -8,6 +8,7 @@ import com.github.britooo.looca.api.core.Looca;
 import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.classes.Faculdade;
 import com.sptech.cybervision.classes.Usuario;
+import com.sptech.cybervision.conexoes.ConexaoAws;
 import com.sptech.cybervision.conexoes.ConexaoAzure;
 import com.sptech.cybervision.conexoes.ConexaoLocal;
 import java.io.File;
@@ -29,6 +30,7 @@ public class Login extends javax.swing.JFrame {
 
     ConexaoAzure conexaoAzure = new ConexaoAzure();
     ConexaoLocal conexaoLocal = new ConexaoLocal();
+    ConexaoAws conexaoAws = new ConexaoAws();
     AssociarMaquina associar = new AssociarMaquina();
     Looca looca = new Looca();
     Logs logs = new Logs();
@@ -188,10 +190,9 @@ public class Login extends javax.swing.JFrame {
         String dataHoraTexto = dtft.format(LocalDateTime.now());
 
         try {
-            Map<String, Object> registro = conexaoAzure.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
+            conexaoAws.getConnection().queryForMap("select * from usuario where email = ? and senha = ?", emailDigitado, senhaDigitada);
 
-            System.out.println("LOGUEI");
-            List<Map<String, Object>> listaUsuario = conexaoAzure.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
+            List<Map<String, Object>> listaUsuario = conexaoAws.getConnection().queryForList("select * from usuario where email = ?", emailDigitado);
             String nomeUsuario = listaUsuario.get(0).get("nome").toString();
 
             String nomeUser = nomeUsuario;

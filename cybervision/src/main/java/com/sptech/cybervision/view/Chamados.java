@@ -7,6 +7,7 @@ package com.sptech.cybervision.view;
 import com.sptech.cybervision.classes.Computador;
 import com.sptech.cybervision.conexoes.ConexaoAzure;
 import com.sptech.cybervision.classes.Slack;
+import com.sptech.cybervision.conexoes.ConexaoAws;
 import com.sptech.cybervision.conexoes.ConexaoLocal;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class Chamados extends javax.swing.JFrame {
 
     ConexaoAzure conexaoAzure = new ConexaoAzure();
     ConexaoLocal conexaoLocal = new ConexaoLocal();
+    ConexaoAws conexaoAws = new ConexaoAws();
     JSONObject json = new JSONObject();
 
     /**
@@ -198,7 +200,7 @@ public class Chamados extends javax.swing.JFrame {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         String dataHoraCriacao = dtf.format(LocalDateTime.now());
 
-        List<Map<String, Object>> registroMaquina = conexaoAzure.getConnection().queryForList("select * from computador where hostname = ?", hostNameMaquina);
+        List<Map<String, Object>> registroMaquina = conexaoAws.getConnection().queryForList("select * from computador where hostname = ?", hostNameMaquina);
 
         if (registroMaquina.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Hostname inválido!");
@@ -213,6 +215,15 @@ public class Chamados extends javax.swing.JFrame {
             Integer fkComputador = Integer.parseInt(registroMaquina.get(0).get("id_computador").toString());
             List<Map<String, Object>> registroHostLocal = conexaoLocal.getConnection().queryForList("select * from computador where hostname = ?", hostNameMaquina);
             Integer fkComputadorLocal = Integer.parseInt(registroHostLocal.get(0).get("id_computador").toString());
+            
+             conexaoAws.getConnection().update(
+                    "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
+                    + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
+                    raAluno, hostNameMaquina, descricaoChamado, status, dataHoraCriacao, fkComputador);
+
+            conexaoAws.getConnection().update(
+                    "UPDATE computador SET problema_fisico = ? WHERE hostname = ?",
+                    true, hostNameMaquina);
             
             conexaoAzure.getConnection().update(
                     "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
