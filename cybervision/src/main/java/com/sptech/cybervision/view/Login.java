@@ -203,7 +203,7 @@ public class Login extends javax.swing.JFrame {
                 logs.logConexao(String.format("%s\\logs\\%s-Log-Conexão-Login", caminhoLocalHome, dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
             } else {
 
-                logs.logConexao(String.format("%s/logs/%s-Log-Conexão-Login", caminhoLocalHome, dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
+                logs.logConexao(String.format("$HOME/logs/%s-Log-Conexão-Login", dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
             }
 
             this.dispose();

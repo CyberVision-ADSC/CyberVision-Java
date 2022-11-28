@@ -1,14 +1,17 @@
 com\sptech\cybervision\classes\Computador.class
 com\sptech\cybervision\conexoes\ConexaoAzure.class
+com\sptech\cybervision\conexoes\ConexaoAws.class
 com\sptech\cybervision\view\Chamados$2.class
 com\sptech\cybervision\Main.class
 com\sptech\cybervision\classes\Sala.class
 com\sptech\cybervision\classes\Usuario.class
 com\sptech\cybervision\view\Chamados.class
+com\sptech\cybervision\classes\Computador$3.class
 com\sptech\cybervision\view\Logado$1.class
 com\sptech\cybervision\view\Login$2.class
 com\sptech\cybervision\view\Chamados$4.class
 com\sptech\cybervision\classes\Processo.class
+com\sptech\cybervision\classes\Computador$2.class
 com\sptech\cybervision\view\Login$3.class
 com\sptech\cybervision\classes\Slack.class
 com\sptech\cybervision\classes\Relatorio.class
@@ -20,6 +23,7 @@ com\sptech\cybervision\view\Login$1.class
 com\sptech\cybervision\view\AssociarMaquina.class
 com\sptech\cybervision\view\Chamados$1.class
 com\sptech\cybervision\view\Logado$2.class
+com\sptech\cybervision\classes\Computador$4.class
 com\sptech\cybervision\conexoes\ConexaoLocal.class
 com\sptech\cybervision\view\AssociarMaquina$3.class
 com\sptech\cybervision\classes\Andar.class
