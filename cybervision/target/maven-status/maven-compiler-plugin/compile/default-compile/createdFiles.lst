@@ -27,7 +27,6 @@ com\sptech\cybervision\classes\Computador$4.class
 com\sptech\cybervision\conexoes\ConexaoLocal.class
 com\sptech\cybervision\view\AssociarMaquina$3.class
 com\sptech\cybervision\classes\Andar.class
-com\sptech\cybervision\CLI.class
 com\sptech\cybervision\classes\Computador$1.class
 logs\Logs.class
 com\sptech\cybervision\view\Chamados$5.class

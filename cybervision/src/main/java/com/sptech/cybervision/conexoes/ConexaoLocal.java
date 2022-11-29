@@ -21,8 +21,8 @@ public class ConexaoLocal {
 
         dataSource​.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-        dataSource​.setUrl("jdbc:mysql://172.17.0.2:3306/cybervision?allowPublicKeyRetrieval=true&useSSL=false?allowPublicKeyRetrieval=true&useSSL=false");
-       // dataSource​.setUrl("jdbc:mysql://localhost:3306/cybervision");
+        //dataSource​.setUrl("jdbc:mysql://172.17.0.2:3306/cybervision?allowPublicKeyRetrieval=true&useSSL=false?allowPublicKeyRetrieval=true&useSSL=false");
+        dataSource​.setUrl("jdbc:mysql://localhost:3306/cybervision");
         
         dataSource​.setUsername("root");
 
