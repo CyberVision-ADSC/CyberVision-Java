@@ -29,6 +29,9 @@ public class Chamados extends javax.swing.JFrame {
     ConexaoLocal conexaoLocal = new ConexaoLocal();
     ConexaoAws conexaoAws = new ConexaoAws();
     JSONObject json = new JSONObject();
+    
+   
+        
 
     /**
      * Creates new form Chamados
@@ -51,14 +54,14 @@ public class Chamados extends javax.swing.JFrame {
         img_background = new javax.swing.JLabel();
         lbl_chamado = new javax.swing.JLabel();
         lbl_ra = new javax.swing.JLabel();
-        inputRa = new javax.swing.JTextField();
-        lbl_hostname = new javax.swing.JLabel();
-        inputHostname = new javax.swing.JTextField();
+        inputHostName = new javax.swing.JTextField();
         btn_finalizar = new javax.swing.JButton();
         lbl_descricao = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         inputDescricao = new javax.swing.JTextPane();
         btn_voltar = new javax.swing.JButton();
+        lbl_descricao1 = new javax.swing.JLabel();
+        inputRa = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -75,22 +78,11 @@ public class Chamados extends javax.swing.JFrame {
         lbl_ra.setForeground(new java.awt.Color(34, 35, 89));
         lbl_ra.setText("RA do aluno: ");
 
-        inputRa.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
-        inputRa.setCaretColor(new java.awt.Color(254, 254, 254));
-        inputRa.addActionListener(new java.awt.event.ActionListener() {
+        inputHostName.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
+        inputHostName.setCaretColor(new java.awt.Color(254, 254, 254));
+        inputHostName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inputRaActionPerformed(evt);
-            }
-        });
-
-        lbl_hostname.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
-        lbl_hostname.setForeground(new java.awt.Color(34, 35, 89));
-        lbl_hostname.setText("Hostname da máquina:");
-
-        inputHostname.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
-        inputHostname.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inputHostnameActionPerformed(evt);
+                inputHostNameActionPerformed(evt);
             }
         });
 
@@ -122,6 +114,18 @@ public class Chamados extends javax.swing.JFrame {
             }
         });
 
+        lbl_descricao1.setFont(new java.awt.Font("Montserrat", 0, 14)); // NOI18N
+        lbl_descricao1.setForeground(new java.awt.Color(34, 35, 89));
+        lbl_descricao1.setText("Hostname:");
+
+        inputRa.setFont(new java.awt.Font("Montserrat", 0, 15)); // NOI18N
+        inputRa.setCaretColor(new java.awt.Color(254, 254, 254));
+        inputRa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputRaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -132,21 +136,24 @@ public class Chamados extends javax.swing.JFrame {
                         .addGap(85, 85, 85)
                         .addComponent(lbl_chamado))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btn_voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(95, 95, 95)
+                        .addComponent(btn_finalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(73, 73, 73)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbl_hostname)
-                            .addComponent(inputHostname, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbl_ra)
-                            .addComponent(inputRa, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lbl_descricao)
+                            .addComponent(inputRa, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addComponent(btn_finalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btn_voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(inputHostName, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lbl_ra)
+                                    .addComponent(lbl_descricao)
+                                    .addComponent(lbl_descricao1))
+                                .addGap(0, 6, Short.MAX_VALUE)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addComponent(img_background)
                 .addGap(0, 0, 0))
         );
@@ -159,19 +166,19 @@ public class Chamados extends javax.swing.JFrame {
                 .addComponent(lbl_chamado)
                 .addGap(41, 41, 41)
                 .addComponent(lbl_ra)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(inputRa, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(48, 48, 48)
-                .addComponent(lbl_hostname)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(inputHostname, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
-                .addComponent(lbl_descricao)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(inputRa, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbl_descricao1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(inputHostName, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lbl_descricao)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
                 .addComponent(btn_finalizar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(32, 32, 32))
             .addComponent(img_background, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -194,11 +201,12 @@ public class Chamados extends javax.swing.JFrame {
     private void btn_finalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_finalizarActionPerformed
         // TODO add your handling code here:
         String raAluno = inputRa.getText();
-        String hostNameMaquina = inputHostname.getText();
+        String hostNameMaquina = inputHostName.getText();
         String descricaoChamado = inputDescricao.getText();
         String status = "Pendente";
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         String dataHoraCriacao = dtf.format(LocalDateTime.now());
+        
 
         List<Map<String, Object>> registroMaquina = conexaoAws.getConnection().queryForList("select * from computador where hostname = ?", hostNameMaquina);
 
@@ -244,7 +252,7 @@ public class Chamados extends javax.swing.JFrame {
                     true, hostNameMaquina);
 
             inputRa.setText(null);
-            inputHostname.setText(null);
+            inputHostName.setText(null);
             inputDescricao.setText(null);
 
             JOptionPane.showMessageDialog(this, "Chamado enviado com sucesso!");
@@ -262,13 +270,9 @@ public class Chamados extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_finalizarActionPerformed
 
-    private void inputHostnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputHostnameActionPerformed
+    private void inputHostNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputHostNameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_inputHostnameActionPerformed
-
-    private void inputRaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputRaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_inputRaActionPerformed
+    }//GEN-LAST:event_inputHostNameActionPerformed
 
     private void btn_voltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_voltarActionPerformed
         // TODO add your handling code here:
@@ -276,6 +280,10 @@ public class Chamados extends javax.swing.JFrame {
         this.dispose();
         logado.setVisible(true);
     }//GEN-LAST:event_btn_voltarActionPerformed
+
+    private void inputRaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputRaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inputRaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -317,13 +325,13 @@ public class Chamados extends javax.swing.JFrame {
     private javax.swing.JButton btn_voltar;
     private javax.swing.JLabel img_background;
     private javax.swing.JTextPane inputDescricao;
-    private javax.swing.JTextField inputHostname;
+    private javax.swing.JTextField inputHostName;
     private javax.swing.JTextField inputRa;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbl_chamado;
     private javax.swing.JLabel lbl_descricao;
-    private javax.swing.JLabel lbl_hostname;
+    private javax.swing.JLabel lbl_descricao1;
     private javax.swing.JLabel lbl_ra;
     // End of variables declaration//GEN-END:variables
 }

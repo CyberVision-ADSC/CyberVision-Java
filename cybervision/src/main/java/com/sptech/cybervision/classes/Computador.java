@@ -11,6 +11,7 @@ import com.sptech.cybervision.conexoes.ConexaoAws;
 import com.sptech.cybervision.conexoes.ConexaoAzure;
 import com.sptech.cybervision.conexoes.ConexaoLocal;
 import com.sptech.cybervision.view.AssociarMaquina;
+import com.sptech.cybervision.view.Chamados;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.SystemTray;
@@ -33,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import logs.Logs;
 import org.json.JSONObject;
 
@@ -81,6 +83,8 @@ public class Computador {
     ConexaoLocal conexaoLocal = new ConexaoLocal();
     ConexaoAws conexaoAws = new ConexaoAws();
     AssociarMaquina associar = new AssociarMaquina();
+    Chamados chamados = new Chamados();
+    Usuario usuario = new Usuario();
     Looca looca = new Looca();
     Logs logs = new Logs();
     JSONObject json = new JSONObject();
@@ -91,6 +95,8 @@ public class Computador {
 
     public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala, String hostName, Integer fkComputadorLocal) {
 
+        setHostname(hostName);
+        System.out.println(hostName);
         //Temporizador que é executado a cada 5 segundos coletando relatórios e processos
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -142,7 +148,6 @@ public class Computador {
                         usoCpu, usoDisco, usoRam, dataHora, fkComputadorLocal);
                 // Instânciando cada relatório gerado
                 Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, dataHora);
-                System.out.println(relatorio);
 
                 // Variáveis que indicam que se o componente está com problema ou não sendo criadas
                 Boolean problemaCpuRelatorio = false;
@@ -315,8 +320,6 @@ public class Computador {
                             Processo process = new Processo(pidProcesso, nomeProcesso,
                                     usoCpuProcesso, usoMemoriaProcesso);
 
-                            System.out.println(process);
-
                         } else {
                             // Se o processo existir na tabela ele é apenas atualizado com dados atuais
                             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
@@ -366,8 +369,6 @@ public class Computador {
                         System.out.println("OCORREU UM ERRO AO FINALIZAR O PROCESSO" + e);
                     }
 
-                } else {
-                    System.out.println("Nao tem processo para matar!");
                 }
 
             }
@@ -481,10 +482,16 @@ public class Computador {
         String caminhoLocalHome = "";
 
         try {
+            String FileSystem = "";
+            if (looca.getSistema().getSistemaOperacional().equalsIgnoreCase("Windows")) {
+                FileSystem = "\\";
+            } else {
+                FileSystem = "/";
+            }
 
             caminhoLocalHome = new Computador().buscarCaminhoLocal();
 
-            File arquivo = new File(String.format("%s\\logs", caminhoLocalHome));
+            File arquivo = new File(String.format("%s%slogs", caminhoLocalHome, FileSystem));
 
             arquivo.mkdir();
 
@@ -493,8 +500,8 @@ public class Computador {
         }
 
         return caminhoLocalHome;
-
     }
+
 
     public String getHostname() {
         return hostname;

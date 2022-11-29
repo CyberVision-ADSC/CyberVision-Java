@@ -35,6 +35,7 @@ public class AssociarMaquina extends javax.swing.JFrame {
     Logado logado = new Logado();
     Faculdade faculdade = new Faculdade();
     Logs logs = new Logs();
+    
 
     /**
      * Creates new form Logado
@@ -159,11 +160,12 @@ public class AssociarMaquina extends javax.swing.JFrame {
     private void inputHostNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputHostNameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_inputHostNameActionPerformed
-
+    
     private void btn_associarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_associarActionPerformed
         // TODO add your handling code here:
         Usuario usuario = new Usuario();
         String hostName = inputHostName.getText();
+        
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         String dataHora = dtf.format(LocalDateTime.now());

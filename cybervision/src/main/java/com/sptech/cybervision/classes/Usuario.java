@@ -51,9 +51,7 @@ public class Usuario {
         Long tamanhoDisco = looca.getGrupoDeDiscos().getTamanhoTotal() / converteGiga;
         String sistemaOperacional = looca.getSistema().getSistemaOperacional();
 
-        System.out.println("CHEGUEI NO LOOOOCOCAA");
         // Atualizando a máquina no banco com os dados coletados
-        
         
         conexaoAws.getConnection().update(
                 "UPDATE computador SET processador = ?, arquitetura = ?, "
@@ -84,10 +82,9 @@ public class Usuario {
                 arquitetura, fabricante, memoriaRam, tamanhoDisco,
                 sistemaOperacional, false, false, false, false, isAtivoComputador);
 
-        System.out.println(computador.toString());
-
         // Chamando função para coletar relatórios e processos da máquina
         computador.coletarRelatoriosProcessos(fkComputador, fkSala, hostName, fkComputadorLocal);
+        
 
     }
     

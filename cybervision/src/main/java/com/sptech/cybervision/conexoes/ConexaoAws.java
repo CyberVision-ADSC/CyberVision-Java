@@ -31,7 +31,7 @@ public class ConexaoAws {
         
             this.connection = new JdbcTemplate(dataSource);
             
-            System.out.println("Conectado AWS");
+           
             
         }catch(Exception e){
             System.out.println("Erro" + e);
