@@ -34,6 +34,7 @@ public class CLI {
 
     public static void main(String[] args) {
         Scanner leitor = new Scanner(System.in);
+        Scanner leitor2 = new Scanner(System.in);
         ConexaoAws conexaoAws = new ConexaoAws();
         ConexaoAzure conexaoAzure = new ConexaoAzure();
         ConexaoLocal conexaoLocal = new ConexaoLocal();
@@ -83,8 +84,8 @@ public class CLI {
 
                     logs.logConexao(String.format("%s/logs/%s-Log-Conexão-Login", caminhoLocalHome, dataHora), nomeUser, " Logou na aplicação ás ", dataHoraTexto);
                 }
-                // Instânciando faculdade que o usuário pertence
 
+                // Instânciando faculdade que o usuário pertence
             } catch (EmptyResultDataAccessException e) {
                 System.out.println("Email ou senha incorretos!");
                 System.out.println("*'enter' para continuar*");
@@ -103,7 +104,7 @@ public class CLI {
 
             }
         } while (error);
-        System.out.println("Bem vindo(a)" + nomeUsuario);
+        System.out.println("Bem vindo(a) " + nomeUsuario);
 
 ////////ASSOCIAR MÁQUINA
         error = false;
@@ -114,6 +115,14 @@ public class CLI {
             try {
                 conexaoAws.getConnection().queryForMap(
                         "select * from computador WHERE hostname = ?", hostNameAssociar);
+
+                List<Map<String, Object>> listaHostname = conexaoLocal.getConnection().queryForList("select * from computador where hostname = ?", hostNameAssociar);
+
+                if (listaHostname.isEmpty()) {
+                    conexaoLocal.getConnection().update("INSERT INTO computador (id_computador, hostname) VALUES (?, ?)", 1, hostNameAssociar);
+                }
+
+                Integer fkComputadorLocal = 1;
 
                 String caminhoLocalHome = new Computador().criarPastaLog();
 
@@ -126,19 +135,12 @@ public class CLI {
                     logs.logConexao(String.format("%s/logs/%s-Log-Conexao-Maquina", caminhoLocalHome, dataHora), hostNameAssociar, " Foi associada ás ", dataHoraTexto);
 
                 }
+
                 // Pegando fk_sala do computador cujo hostname foi inserido
-                List<Map<String, Object>> listaComputador = conexaoLocal.getConnection().queryForList("select * from computador where hostname = ?", hostNameAssociar);
+                List<Map<String, Object>> listaComputador = conexaoAws.getConnection().queryForList("select * from computador where hostname = ?", hostNameAssociar);
                 Boolean isAtivoComputador = Boolean.parseBoolean(listaComputador.get(0).get("is_ativo").toString());
                 Integer fkSala = Integer.parseInt(listaComputador.get(0).get("fk_sala").toString());
                 Integer fkComputador = Integer.parseInt(listaComputador.get(0).get("id_computador").toString());
-
-                List<Map<String, Object>> listaHostname = conexaoLocal.getConnection().queryForList("select * from computador where hostname = ?", hostNameAssociar);
-
-                if (listaHostname.isEmpty()) {
-                    conexaoLocal.getConnection().update("INSERT INTO computador (id_computador, hostname) VALUES (?, ?)", 1, hostNameAssociar);
-                }
-
-                Integer fkComputadorLocal = 1;
 
                 usuario.associarMaquina(hostNameAssociar, isAtivoComputador, fkComputador, fkSala, fkComputadorLocal);
 
@@ -167,86 +169,87 @@ public class CLI {
         String hostNameChamado;
         List<Map<String, Object>> registroMaquina;
         String descricao;
+
         do {
 
-            System.out.println("1 - Abrir chamados");
-            System.out.println("2 - Fechar aplicação");
+            System.out.println("Para abrir um chamado digite 1");
+            
 
             escolha = leitor.nextInt();
 
-        } while (escolha != 1 && escolha != 2);
+            if (escolha == 1) {
 
-        if (escolha == 1) {
+                System.out.println("Bem vindo á página de chamados!");
 
-            System.out.println("Bem vindo á página de chamados!");
+                do {
+                    System.out.println("Digite seu RA:");
+                    raAluno = leitor2.nextLine();
 
-            do {
-                System.out.println("Digite seu RA:");
-                raAluno = leitor.nextLine();
+                } while (raAluno.isEmpty());
 
-            } while (raAluno.isEmpty());
+                do {
+                    System.out.println("Digite seu Hostname:");
+                    hostNameChamado = leitor2.nextLine();
 
-            do {
-                System.out.println("Digite seu Hostname:");
-                hostNameChamado = leitor.nextLine();
+                    registroMaquina = conexaoAws.getConnection().queryForList("select * from computador where hostname = ?", hostNameChamado);
 
-                registroMaquina = conexaoAws.getConnection().queryForList("select * from computador where hostname = ?", hostNameChamado);
+                } while (registroMaquina.isEmpty());
 
-            } while (registroMaquina.isEmpty());
+                do {
+                    System.out.println("Digite a descricao do chamado:");
+                    descricao = leitor2.nextLine();
 
-            do {
-                System.out.println("Digite a descricao do chamado:");
-                descricao = leitor.nextLine();
+                } while (descricao.isEmpty());
 
-            } while (descricao.isEmpty());
+                Integer fkComputador = Integer.parseInt(registroMaquina.get(0).get("id_computador").toString());
+                List<Map<String, Object>> registroHostLocal = conexaoLocal.getConnection().queryForList("select * from computador where hostname = ?", hostNameChamado);
+                Integer fkComputadorLocal = Integer.parseInt(registroHostLocal.get(0).get("id_computador").toString());
+                String status = "Pendente";
+                DateTimeFormatter data_hora = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
+                String dataHoraCriacao = data_hora.format(LocalDateTime.now());
+                conexaoAws.getConnection().update(
+                        "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
+                        + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
+                        raAluno, hostNameChamado, descricao, status, dataHoraCriacao, fkComputador);
 
-            Integer fkComputador = Integer.parseInt(registroMaquina.get(0).get("id_computador").toString());
-            List<Map<String, Object>> registroHostLocal = conexaoLocal.getConnection().queryForList("select * from computador where hostname = ?", hostNameChamado);
-            Integer fkComputadorLocal = Integer.parseInt(registroHostLocal.get(0).get("id_computador").toString());
-            String status = "Pendente";
-            DateTimeFormatter data_hora = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
-            String dataHoraCriacao = data_hora.format(LocalDateTime.now());
-            conexaoAws.getConnection().update(
-                    "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
-                    + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
-                    raAluno, hostNameChamado, descricao, status, dataHoraCriacao, fkComputador);
+                conexaoAws.getConnection().update(
+                        "UPDATE computador SET problema_fisico = ? WHERE hostname = ?",
+                        true, hostNameChamado);
 
-            conexaoAws.getConnection().update(
-                    "UPDATE computador SET problema_fisico = ? WHERE hostname = ?",
-                    true, hostNameChamado);
+                conexaoAzure.getConnection().update(
+                        "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
+                        + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
+                        raAluno, hostNameChamado, descricao, status, dataHoraCriacao, fkComputador);
 
-            conexaoAzure.getConnection().update(
-                    "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
-                    + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
-                    raAluno, hostNameChamado, descricao, status, dataHoraCriacao, fkComputador);
+                conexaoAzure.getConnection().update(
+                        "UPDATE computador SET problema_fisico = ? WHERE hostname = ?",
+                        true, hostNameChamado);
 
-            conexaoAzure.getConnection().update(
-                    "UPDATE computador SET problema_fisico = ? WHERE hostname = ?",
-                    true, hostNameChamado);
+                conexaoLocal.getConnection().update(
+                        "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
+                        + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
+                        raAluno, hostNameChamado, descricao, status, dataHoraCriacao, fkComputadorLocal);
 
-            conexaoLocal.getConnection().update(
-                    "INSERT INTO chamados (ra_aluno, hostname, descricao_ocorrido,"
-                    + " status_chamado, data_hora_criacao, fk_computador) VALUES (?, ?, ?, ?, ?, ?)",
-                    raAluno, hostNameChamado, descricao, status, dataHoraCriacao, fkComputadorLocal);
+                conexaoLocal.getConnection().update(
+                        "UPDATE computador SET problema_fisico = ? WHERE hostname = ?",
+                        true, hostNameChamado);
 
-            conexaoLocal.getConnection().update(
-                    "UPDATE computador SET problema_fisico = ? WHERE hostname = ?",
-                    true, hostNameChamado);
+                System.out.println("Chamado enviado com sucesso!");
 
-            System.out.println("Chamado enviado com sucesso!");
+                json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
+                        + "Um chamado acaba de ser aberto referente a máquina com o hostname: " + hostNameChamado);
+                try {
+                    Slack.enviarMensagem(json);
+                } catch (IOException ex) {
+                    Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                System.out.println("Comando inválido!");
 
-            json.put("text", ":rotating_light: ALERTA :rotating_light:\n"
-                    + "Um chamado acaba de ser aberto referente a máquina com o hostname: " + hostNameChamado);
-            try {
-                Slack.enviarMensagem(json);
-            } catch (IOException ex) {
-                Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Computador.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
-            System.exit(0);
 
-        }
+        } while (true);
     }
 }

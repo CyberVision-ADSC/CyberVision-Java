@@ -96,7 +96,7 @@ public class Computador {
     public void coletarRelatoriosProcessos(Integer fkComputador, Integer fkSala, String hostName, Integer fkComputadorLocal) {
 
         setHostname(hostName);
-        System.out.println(hostName);
+       
         //Temporizador que é executado a cada 5 segundos coletando relatórios e processos
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -133,6 +133,7 @@ public class Computador {
                 String dataHora = dtf.format(LocalDateTime.now());
 
                 // Inserindo relatórios na tabela
+                
                 conexaoAws.getConnection().update(
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador,"
                         + " fk_sala) VALUES (?, ?, ?, ?, ?, ?)",
@@ -147,7 +148,7 @@ public class Computador {
                         "INSERT INTO relatorio (uso_cpu, uso_disco, uso_ram, data_hora, fk_computador) VALUES (?, ?, ?, ?, ?)",
                         usoCpu, usoDisco, usoRam, dataHora, fkComputadorLocal);
                 // Instânciando cada relatório gerado
-                Relatorio relatorio = new Relatorio(usoCpu, usoDisco, usoRam, dataHora);
+                ;
 
                 // Variáveis que indicam que se o componente está com problema ou não sendo criadas
                 Boolean problemaCpuRelatorio = false;
@@ -352,8 +353,10 @@ public class Computador {
                 if (registroProcessoMatar != null && !registroProcessoMatar.isEmpty()) {
                     try {
 
+                        
                         Integer pidMatar = Integer.parseInt(registroProcessoMatar.get(0).get("pid_processo").toString());
 
+//                        Runtime.getRuntime().exec("taskkill /F /PID 827");
                         SYS_MON.killProcess(pidMatar);
                         SYS_MON.killProcessTree(pidMatar, true);
                         System.out.println("Processo morto!");
